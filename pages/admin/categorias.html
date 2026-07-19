@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Categorías - Admin NovaStore</title>
-  <link rel="stylesheet" href="../src/css/global.css">
+  <link rel="stylesheet" href="../../src/css/global.css">
 </head>
 <body>
   <div class="admin-layout">
@@ -20,10 +20,10 @@
     </main>
   </div>
   <script type="module">
-    import { requireAdmin } from '../src/js/guards/admin.guard.js'
-    import { supabase } from '../src/js/config/supabase.js'
-    import { safeText } from '../src/js/utils/dom.js'
-    import { showSuccess, showError } from '../src/js/utils/notifications.js'
+    import { requireAdmin } from '../../src/js/guards/admin.guard.js'
+    import { supabase } from '../../src/js/config/supabase.js'
+    import { safeText } from '../../src/js/utils/dom.js'
+    import { showSuccess, showError } from '../../src/js/utils/notifications.js'
 
     const base = import.meta.env.BASE_URL
 
@@ -40,7 +40,7 @@
       </div>`
       document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
         e.preventDefault()
-        const { authService } = await import('../src/js/services/auth.service.js')
+        const { authService } = await import('../../src/js/services/auth.service.js')
         await authService.signOut()
         window.location.href = `${base}index.html`
       })
