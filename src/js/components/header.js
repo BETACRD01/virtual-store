@@ -54,6 +54,14 @@ export async function loadHeader() {
     ).join('')
   } catch {}
 
+  const cartBadge = cartCount > 0 ? `<span class="cart-count" id="cart-count">${cartCount > 99 ? '99+' : cartCount}</span>` : ''
+
+  const currentPath = window.location.pathname.replace(base, '').replace(/\/$/, '') || 'index.html'
+
+  function isActive(pathPart) {
+    return currentPath.includes(pathPart) ? 'active' : ''
+  }
+
   headerEl.innerHTML = `
     <div class="header" id="site-header">
       <div class="container">
@@ -68,9 +76,10 @@ export async function loadHeader() {
             <input type="text" id="global-search" placeholder="Buscar productos..." aria-label="Buscar productos">
           </div>
           <div class="header-actions">
+            <button class="mobile-search-btn" id="mobile-search-btn" aria-label="Buscar">🔍</button>
             <a href="${base}pagina/carrito.html" class="header-action-btn" title="Carrito" aria-label="Carrito de compras">
               🛒
-              ${cartCount > 0 ? `<span class="cart-count" id="cart-count">${cartCount > 99 ? '99+' : cartCount}</span>` : ''}
+              ${cartBadge}
             </a>
             ${userMenu}
           </div>
@@ -86,7 +95,40 @@ export async function loadHeader() {
         </div>
       </div>
     </nav>
+    <div class="mobile-search-overlay" id="mobile-search-overlay">
+      <div class="search-overlay-inner">
+        <input type="text" id="mobile-search-input" placeholder="Buscar productos..." autofocus>
+        <button class="search-close-btn" id="mobile-search-close">✕</button>
+      </div>
+    </div>
+    <div class="tab-bar" id="tab-bar">
+      <div class="tab-bar-inner">
+        <a href="${base}index.html" class="tab-bar-item ${isActive('index.html') || currentPath === '' ? 'active' : ''}">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-label">Inicio</span>
+        </a>
+        <a href="${base}pagina/catalogo.html" class="tab-bar-item ${isActive('catalogo') ? 'active' : ''}">
+          <span class="tab-icon">🛍️</span>
+          <span class="tab-label">Catálogo</span>
+        </a>
+        <a href="${base}pagina/carrito.html" class="tab-bar-item ${isActive('carrito') ? 'active' : ''}">
+          <span class="tab-icon">🛒</span>
+          <span class="tab-label">Carrito</span>
+          ${cartCount > 0 ? `<span class="tab-badge" id="tab-cart-badge">${cartCount > 99 ? '99+' : cartCount}</span>` : ''}
+        </a>
+        <a href="${base}cuenta/favoritos.html" class="tab-bar-item ${isActive('favoritos') ? 'active' : ''}">
+          <span class="tab-icon">♥</span>
+          <span class="tab-label">Favs</span>
+        </a>
+        <a href="${user ? base + 'cuenta/perfil.html' : base + 'auth/login.html'}" class="tab-bar-item ${isActive('cuenta') || isActive('perfil') ? 'active' : ''}">
+          <span class="tab-icon">👤</span>
+          <span class="tab-label">Perfil</span>
+        </a>
+      </div>
+    </div>
   `
+
+  document.body.classList.add('has-tab-bar')
 
   const headerEl2 = document.getElementById('site-header')
   let lastScroll = 0
@@ -115,7 +157,16 @@ export async function loadHeader() {
   const menuBtn = document.getElementById('mobile-menu-btn')
   const nav = document.getElementById('main-nav')
   if (menuBtn && nav) {
-    menuBtn.addEventListener('click', () => nav.classList.toggle('open'))
+    menuBtn.addEventListener('click', () => {
+      nav.classList.toggle('open')
+      document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : ''
+    })
+    nav.addEventListener('click', (e) => {
+      if (e.target === nav) {
+        nav.classList.remove('open')
+        document.body.style.overflow = ''
+      }
+    })
   }
 
   const userMenuBtn = document.getElementById('user-menu-btn')
@@ -135,5 +186,46 @@ export async function loadHeader() {
       await authService.signOut()
       window.location.href = `${base}index.html`
     })
+  }
+
+  const searchBtn = document.getElementById('mobile-search-btn')
+  const searchOverlay = document.getElementById('mobile-search-overlay')
+  const mobileSearchInput = document.getElementById('mobile-search-input')
+  const searchCloseBtn = document.getElementById('mobile-search-close')
+
+  if (searchBtn && searchOverlay && mobileSearchInput && searchCloseBtn) {
+    searchBtn.addEventListener('click', () => {
+      searchOverlay.classList.add('open')
+      setTimeout(() => mobileSearchInput.focus(), 100)
+    })
+    searchCloseBtn.addEventListener('click', () => {
+      searchOverlay.classList.remove('open')
+    })
+    let timeout
+    mobileSearchInput.addEventListener('input', () => {
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        const q = mobileSearchInput.value.trim()
+        if (q) {
+          window.location.href = `${base}pagina/catalogo.html?busqueda=${encodeURIComponent(q)}`
+        }
+      }, 500)
+    })
+    mobileSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        clearTimeout(timeout)
+        const q = mobileSearchInput.value.trim()
+        if (q) {
+          window.location.href = `${base}pagina/catalogo.html?busqueda=${encodeURIComponent(q)}`
+        } else {
+          searchOverlay.classList.remove('open')
+        }
+      }
+    })
+  }
+
+  const tabBadge = document.getElementById('tab-cart-badge')
+  if (tabBadge) {
+    tabBadge.classList.add('bump')
   }
 }
