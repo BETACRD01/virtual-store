@@ -1,0 +1,18 @@
+import"./auth.service-DJHmt2aS.js";import{l as E,a as $,p as m}from"./footer-DYB8yhsx.js";import{c as b,f as u}from"./currency-BUz-WTj3.js";import{a as I,s as i}from"./dom-Dz1M3mpB.js";const B="/virtual-store/";let t=1;const p=12;async function L(){await E(),$();const c=new URLSearchParams(window.location.search),g=c.get("busqueda")||"",f=c.get("categoria")||"",v=c.get("ofertas")==="true",y=await m.getActiveCategories(),h=document.getElementById("filter-category");y.forEach(a=>{const r=document.createElement("option");r.value=a.id,r.textContent=a.name,a.id===f&&(r.selected=!0),h.appendChild(r)}),document.getElementById("filter-search").value=g,document.getElementById("filter-offers").checked=v;async function n(){const a=document.getElementById("products-container");a.innerHTML=Array(4).fill('<div class="skeleton" style="height:320px"></div>').join("");try{const r=await m.getProducts({categoryId:document.getElementById("filter-category").value||void 0,search:document.getElementById("filter-search").value||void 0,offers:document.getElementById("filter-offers").checked||void 0,sort:document.getElementById("filter-sort").value||void 0,page:t,limit:p});r.products.length?a.innerHTML=r.products.map(e=>{var l;const d=b(e.price,e.offer_price);return`<a href="${B}pagina/producto.html?id=${e.id}" class="product-card">
+                <div class="product-card-image-wrapper">
+                  <img src="${e.main_image_url||""}" alt="${i(e.name)}" class="product-card-image" loading="lazy" onerror="this.parentElement.innerHTML='<div class=product-card-image-placeholder>📦</div>'">
+                  ${d>0?`<span class="product-card-badge">-${d}%</span>`:""}
+                </div>
+                <div class="product-card-body">
+                  <div class="product-card-category">${i(((l=e.category)==null?void 0:l.name)||"")}</div>
+                  <div class="product-card-name">${i(e.name)}</div>
+                  <div class="product-card-price">
+                    <span class="product-card-current">${u(e.offer_price||e.price)}</span>
+                    ${e.offer_price?`<span class="product-card-old">${u(e.price)}</span>`:""}
+                  </div>
+                </div>
+              </a>`}).join(""):a.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📦</div><div class="empty-state-title">No hay productos</div><p>Intenta con otros filtros.</p></div>';const o=Math.ceil(r.count/p),s=document.getElementById("pagination");o>1?(s.innerHTML=`<div class="pagination">
+              ${t>1?`<button class="btn btn-outline btn-sm" data-page="${t-1}">Anterior</button>`:""}
+              <span style="display:inline-flex;align-items:center;padding:0 1rem;font-weight:600;font-size:0.875rem;color:var(--color-gray-500)">${t} / ${o}</span>
+              ${t<o?`<button class="btn btn-outline btn-sm" data-page="${t+1}">Siguiente</button>`:""}
+            </div>`,s.querySelectorAll("[data-page]").forEach(e=>e.addEventListener("click",()=>{t=Number(e.dataset.page),n(),window.scrollTo(0,0)}))):s.innerHTML=""}catch{a.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">⚠️</div><div class="empty-state-title">Error</div><p>No se pudieron cargar los productos.</p></div>'}}document.getElementById("filter-category").addEventListener("change",()=>{t=1,n()}),document.getElementById("filter-sort").addEventListener("change",()=>{t=1,n()}),document.getElementById("filter-offers").addEventListener("change",()=>{t=1,n()}),document.getElementById("filter-search").addEventListener("input",I(()=>{t=1,n()},400)),await n()}L();
