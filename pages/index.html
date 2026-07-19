@@ -95,14 +95,16 @@
           const discount = calculateDiscount(p.price, p.offer_price)
           return `
             <a href="${base}pagina/producto.html?id=${p.id}" class="product-card">
-              <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22 fill=%22%23e2e8f0%22><rect width=%22300%22 height=%22300%22/></svg>'">
+              <div class="product-card-image-wrapper">
+                <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.parentElement.innerHTML='<div class=product-card-image-placeholder>📦</div>'">
+                ${discount > 0 ? `<span class="product-card-badge">-${discount}%</span>` : ''}
+              </div>
               <div class="product-card-body">
                 <div class="product-card-category">${safeText(p.category?.name || '')}</div>
                 <div class="product-card-name">${safeText(p.name)}</div>
                 <div class="product-card-price">
                   <span class="product-card-current">${formatCurrency(p.offer_price || p.price)}</span>
                   ${p.offer_price ? `<span class="product-card-old">${formatCurrency(p.price)}</span>` : ''}
-                  ${discount > 0 ? `<span class="product-card-discount">-${discount}%</span>` : ''}
                 </div>
               </div>
             </a>
@@ -116,14 +118,16 @@
           const discount = calculateDiscount(p.price, p.offer_price)
           return `
             <a href="${base}pagina/producto.html?id=${p.id}" class="product-card">
-              <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22 fill=%22%23e2e8f0%22><rect width=%22300%22 height=%22300%22/></svg>'">
+              <div class="product-card-image-wrapper">
+                <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.parentElement.innerHTML='<div class=product-card-image-placeholder>📦</div>'">
+                <span class="product-card-badge">-${discount}%</span>
+              </div>
               <div class="product-card-body">
                 <div class="product-card-category">${safeText(p.category?.name || '')}</div>
                 <div class="product-card-name">${safeText(p.name)}</div>
                 <div class="product-card-price">
                   <span class="product-card-current">${formatCurrency(p.offer_price || p.price)}</span>
                   <span class="product-card-old">${formatCurrency(p.price)}</span>
-                  <span class="product-card-discount">-${discount}%</span>
                 </div>
               </div>
             </a>

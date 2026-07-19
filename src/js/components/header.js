@@ -19,9 +19,32 @@ export async function loadHeader() {
     cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0)
   } catch {}
 
+  const initials = profile?.full_name
+    ? profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+    : user?.email?.[0]?.toUpperCase() || '?'
+
   const userMenu = user
-    ? `<a href="${base}cuenta/perfil.html" title="Mi cuenta" aria-label="Mi cuenta">${profile?.full_name?.[0]?.toUpperCase() || '👤'}</a>`
-    : `<a href="${base}auth/login.html" class="btn btn-primary btn-sm">Iniciar sesión</a>`
+    ? `<div class="user-menu-wrapper">
+        <button class="header-avatar" id="user-menu-btn" aria-label="Menú de usuario">${initials}</button>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="user-dropdown-header">
+            <div class="user-dropdown-avatar">${initials}</div>
+            <div>
+              <div class="user-dropdown-name">${profile?.full_name || 'Usuario'}</div>
+              <div class="user-dropdown-email">${user.email}</div>
+            </div>
+          </div>
+          <div class="user-dropdown-divider"></div>
+          <a href="${base}cuenta/perfil.html" class="user-dropdown-item">👤 Mi perfil</a>
+          <a href="${base}cuenta/pedidos.html" class="user-dropdown-item">📦 Mis pedidos</a>
+          <a href="${base}cuenta/direcciones.html" class="user-dropdown-item">📍 Direcciones</a>
+          <a href="${base}cuenta/favoritos.html" class="user-dropdown-item">♥ Favoritos</a>
+          ${role === 'admin' ? `<div class="user-dropdown-divider"></div><a href="${base}admin/" class="user-dropdown-item">⚙️ Panel admin</a>` : ''}
+          <div class="user-dropdown-divider"></div>
+          <button class="user-dropdown-item" id="logout-btn">🚪 Cerrar sesión</button>
+        </div>
+      </div>`
+    : `<a href="${base}auth/login.html" class="btn btn-primary btn-sm" style="padding:0.5rem 1.25rem;font-size:0.8rem">Iniciar sesión</a>`
 
   let categoriesHtml = ''
   try {
@@ -32,12 +55,12 @@ export async function loadHeader() {
   } catch {}
 
   headerEl.innerHTML = `
-    <div class="header">
+    <div class="header" id="site-header">
       <div class="container">
         <div class="header-inner">
           <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menú">☰</button>
           <a href="${base}index.html" class="header-logo">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#2563eb"/><path d="M12 28V16l8-6 8 6v12h-6v-8h-4v8H12z" fill="#fff"/></svg>
+            <svg width="36" height="36" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="url(#logo-grad)"/><path d="M12 28V16l8-6 8 6v12h-6v-8h-4v8H12z" fill="#fff"/><defs><linearGradient id="logo-grad" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#818cf8"/></linearGradient></defs></svg>
             NovaStore
           </a>
           <div class="header-search">
@@ -45,19 +68,18 @@ export async function loadHeader() {
             <input type="text" id="global-search" placeholder="Buscar productos..." aria-label="Buscar productos">
           </div>
           <div class="header-actions">
-            ${role === 'admin' ? `<a href="${base}admin/" title="Panel admin">⚙️</a>` : ''}
-            ${userMenu}
             <a href="${base}pagina/carrito.html" title="Carrito" aria-label="Carrito de compras">
               🛒
               ${cartCount > 0 ? `<span class="cart-count" id="cart-count">${cartCount > 99 ? '99+' : cartCount}</span>` : ''}
             </a>
+            ${userMenu}
           </div>
         </div>
       </div>
     </div>
     <nav class="nav" id="main-nav">
       <div class="container">
-        <div class="nav-list">
+        <div class="nav-list" id="nav-list">
           <a href="${base}index.html">Inicio</a>
           <a href="${base}pagina/catalogo.html">Todos los productos</a>
           ${categoriesHtml}
@@ -65,6 +87,18 @@ export async function loadHeader() {
       </div>
     </nav>
   `
+
+  const headerEl2 = document.getElementById('site-header')
+  let lastScroll = 0
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.scrollY
+    if (currentScroll > 20) {
+      headerEl2.classList.add('scrolled')
+    } else {
+      headerEl2.classList.remove('scrolled')
+    }
+    lastScroll = currentScroll
+  })
 
   const searchInput = document.getElementById('global-search')
   if (searchInput) {
@@ -82,5 +116,24 @@ export async function loadHeader() {
   const nav = document.getElementById('main-nav')
   if (menuBtn && nav) {
     menuBtn.addEventListener('click', () => nav.classList.toggle('open'))
+  }
+
+  const userMenuBtn = document.getElementById('user-menu-btn')
+  const userDropdown = document.getElementById('user-dropdown')
+  if (userMenuBtn && userDropdown) {
+    userMenuBtn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      userDropdown.classList.toggle('open')
+    })
+    document.addEventListener('click', () => userDropdown.classList.remove('open'))
+    userDropdown.addEventListener('click', (e) => e.stopPropagation())
+  }
+
+  const logoutBtn = document.getElementById('logout-btn')
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      await authService.signOut()
+      window.location.href = `${base}index.html`
+    })
   }
 }
