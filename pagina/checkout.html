@@ -3,29 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mis favoritos - NovaStore</title>
-  <script type="module" crossorigin src="/virtual-store/assets/favoritos-Yqd-auOz.js"></script>
+  <title>Checkout - NovaStore</title>
+  <script type="module" crossorigin src="/virtual-store/assets/pagina-checkout-BooxRdyD.js"></script>
   <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.service-jTKzoafw.js">
   <link rel="modulepreload" crossorigin href="/virtual-store/assets/footer-yy1v75yP.js">
-  <link rel="modulepreload" crossorigin href="/virtual-store/assets/account-sidebar-BxKhxLVD.js">
   <link rel="modulepreload" crossorigin href="/virtual-store/assets/profile.service-of41WNJ1.js">
-  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.guard-BohR-jzd.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/orders.service-BL5AnQiK.js">
   <link rel="modulepreload" crossorigin href="/virtual-store/assets/currency-BUz-WTj3.js">
   <link rel="modulepreload" crossorigin href="/virtual-store/assets/dom-Dz1M3mpB.js">
   <link rel="modulepreload" crossorigin href="/virtual-store/assets/notifications-DBxoMB4P.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.guard-BohR-jzd.js">
   <link rel="stylesheet" crossorigin href="/virtual-store/assets/auth-DVs-K_gi.css">
 </head>
 <body>
   <div class="page-wrapper">
     <header id="main-header"></header>
     <main>
-      <div class="container">
-        <div class="account-layout">
-          <aside id="account-sidebar"></aside>
-          <div>
-            <h1 style="font-size:var(--font-size-2xl);font-weight:700;margin-bottom:var(--spacing-xl)">Mis favoritos</h1>
-            <div class="grid grid-4" id="favorites-list"><p>...</p></div>
+      <div class="page-header">
+        <div class="container">
+          <h1>Finalizar compra</h1>
+          <div class="breadcrumb"><a href="./index.html">Inicio</a> / <a href="./carrito.html">Carrito</a> / Checkout</div>
+        </div>
+      </div>
+      <div class="container checkout-page">
+        <div class="checkout-layout">
+          <div id="checkout-form">
+            <div class="text-center" style="padding:3rem 0"><div class="loading-spinner"></div></div>
           </div>
+          <div id="checkout-summary"></div>
         </div>
       </div>
     </main>

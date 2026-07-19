@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo - NovaStore</title>
+  <script type="module" crossorigin src="/virtual-store/assets/pagina-catalogo-GJLGnkDj.js"></script>
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.service-jTKzoafw.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/footer-yy1v75yP.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/currency-BUz-WTj3.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/dom-Dz1M3mpB.js">
+  <link rel="stylesheet" crossorigin href="/virtual-store/assets/auth-DVs-K_gi.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header id="main-header"></header>
+    <main>
+      <div class="page-header">
+        <div class="container">
+          <h1>Catálogo de productos</h1>
+          <div class="breadcrumb"><a href="./index.html">Inicio</a> / Catálogo</div>
+        </div>
+      </div>
+      <div class="container" style="padding-top:var(--spacing-xl)">
+        <div class="filters" id="filters">
+          <select id="filter-category" aria-label="Filtrar por categoría">
+            <option value="">Todas las categorías</option>
+          </select>
+          <select id="filter-sort" aria-label="Ordenar por">
+            <option value="">Más recientes</option>
+            <option value="price_asc">Precio: menor a mayor</option>
+            <option value="price_desc">Precio: mayor a menor</option>
+            <option value="name_asc">Nombre: A-Z</option>
+            <option value="name_desc">Nombre: Z-A</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.875rem">
+            <input type="checkbox" id="filter-offers"> Solo ofertas
+          </label>
+          <input type="text" id="filter-search" placeholder="Buscar..." aria-label="Buscar en catálogo">
+        </div>
+        <div class="grid grid-4" id="products-container">
+          <div class="skeleton" style="height:320px"></div>
+          <div class="skeleton" style="height:320px"></div>
+          <div class="skeleton" style="height:320px"></div>
+          <div class="skeleton" style="height:320px"></div>
+        </div>
+        <div id="pagination" style="text-align:center;padding:2rem 0"></div>
+      </div>
+    </main>
+    <footer id="main-footer"></footer>
+  </div>
+</body>
+</html>
