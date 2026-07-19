@@ -1,5 +1,5 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/auth.service-jTKzoafw.js","assets/auth-DVs-K_gi.css"])))=>i.map(i=>d[i]);
-import{s as o}from"./auth.service-jTKzoafw.js";import{r as u,_ as g}from"./admin.guard--e9Du7_b.js";import{s as l}from"./dom-Dz1M3mpB.js";import{s as p,a as c}from"./notifications-DBxoMB4P.js";const s="/virtual-store/";async function v(){var i;const a=document.getElementById("admin-sidebar");a.innerHTML=`<div class="admin-sidebar">
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/auth.service-C3JQ1Rkv.js","assets/auth-DVs-K_gi.css"])))=>i.map(i=>d[i]);
+import{s as o}from"./auth.service-C3JQ1Rkv.js";import{r as u,_ as g}from"./admin.guard-B9R4p4sE.js";import{s as l}from"./dom-Dz1M3mpB.js";import{s as p,a as c}from"./notifications-DBxoMB4P.js";const s="/virtual-store/";async function v(){var i;const a=document.getElementById("admin-sidebar");a.innerHTML=`<div class="admin-sidebar">
         <div class="admin-sidebar-logo">⚙️ NovaStore</div>
         <a href="${s}admin/">📊 Dashboard</a>
         <a href="${s}admin/productos.html">📦 Productos</a>
@@ -7,7 +7,7 @@ import{s as o}from"./auth.service-jTKzoafw.js";import{r as u,_ as g}from"./admin
         <a href="${s}admin/pedidos.html">📋 Pedidos</a>
         <a href="${s}admin/clientes.html">👥 Clientes</a>
         <hr style="border-color:rgba(255,255,255,0.1);margin:1rem 0"><a href="${s}index.html">← Tienda</a><a href="#" id="logout-btn">🚪 Salir</a>
-      </div>`,(i=document.getElementById("logout-btn"))==null||i.addEventListener("click",async e=>{e.preventDefault();const{authService:t}=await g(async()=>{const{authService:n}=await import("./auth.service-jTKzoafw.js").then(r=>r.b);return{authService:n}},__vite__mapDeps([0,1]));await t.signOut(),window.location.href=`${s}index.html`})}async function d(){const{data:a,error:i}=await o.from("categories").select("*").order("name");if(i){document.getElementById("categories-table").innerHTML="<p>Error</p>";return}const e=document.getElementById("categories-table");if(!(a!=null&&a.length)){e.innerHTML='<div class="empty-state"><p>Sin categorías.</p></div>';return}e.innerHTML=`<div class="table-container"><table>
+      </div>`,(i=document.getElementById("logout-btn"))==null||i.addEventListener("click",async e=>{e.preventDefault();const{authService:t}=await g(async()=>{const{authService:n}=await import("./auth.service-C3JQ1Rkv.js").then(r=>r.b);return{authService:n}},__vite__mapDeps([0,1]));await t.signOut(),window.location.href=`${s}index.html`})}async function d(){const{data:a,error:i}=await o.from("categories").select("*").order("name");if(i){document.getElementById("categories-table").innerHTML="<p>Error</p>";return}const e=document.getElementById("categories-table");if(!(a!=null&&a.length)){e.innerHTML='<div class="empty-state"><p>Sin categorías.</p></div>';return}e.innerHTML=`<div class="table-container"><table>
         <thead><tr><th>Nombre</th><th>Slug</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody>${a.map(t=>`<tr>
           <td><strong>${l(t.name)}</strong></td>
