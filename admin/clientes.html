@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes - Admin NovaStore</title>
+  <link rel="stylesheet" href="../src/css/global.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside id="admin-sidebar"></aside>
+    <main class="admin-content">
+      <h1 style="font-size:var(--font-size-2xl);font-weight:700;margin-bottom:var(--spacing-xl)">Clientes</h1>
+      <div class="card" style="padding:var(--spacing-lg)">
+        <div id="customers-table"><div class="skeleton" style="height:400px"></div></div>
+      </div>
+    </main>
+  </div>
+  <script type="module">
+    import { requireAdmin } from '../src/js/guards/admin.guard.js'
+    import { supabase } from '../src/js/config/supabase.js'
+    import { safeText } from '../src/js/utils/dom.js'
+    import { showSuccess } from '../src/js/utils/notifications.js'
+
+    const base = import.meta.env.BASE_URL
+
+    async function loadSidebar() {
+      const el = document.getElementById('admin-sidebar')
+      el.innerHTML = `<div class="admin-sidebar">
+        <div class="admin-sidebar-logo">⚙️ NovaStore</div>
+        <a href="${base}admin/">📊 Dashboard</a>
+        <a href="${base}admin/productos.html">📦 Productos</a>
+        <a href="${base}admin/categorias.html">📂 Categorías</a>
+        <a href="${base}admin/pedidos.html">📋 Pedidos</a>
+        <a href="${base}admin/clientes.html" class="active">👥 Clientes</a>
+        <hr style="border-color:rgba(255,255,255,0.1);margin:1rem 0"><a href="${base}index.html">← Tienda</a><a href="#" id="logout-btn">🚪 Salir</a>
+      </div>`
+      document.getElementById('logout-btn')?.addEventListener('click', async (e) => { e.preventDefault(); const { authService } = await import('../src/js/services/auth.service.js'); await authService.signOut(); window.location.href = `${base}index.html` })
+    }
+
+    async function init() {
+      await requireAdmin(); await loadSidebar()
+      const { data, error } = await supabase.from('profiles').select('*, orders:orders(count)').order('created_at', { ascending: false })
+      const el = document.getElementById('customers-table')
+      if (error) { el.innerHTML = `<p>Error</p>`; return }
+      if (!data?.length) { el.innerHTML = '<div class="empty-state"><p>Sin clientes.</p></div>'; return }
+      el.innerHTML = `<div class="table-container"><table>
+        <thead><tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Registro</th><th>Pedidos</th><th>Rol</th><th>Estado</th></tr></thead>
+        <tbody>${data.map(c => `<tr>
+          <td><strong>${safeText(c.full_name || '—')}</strong></td>
+          <td>${safeText(c.email || '—')}</td>
+          <td>${safeText(c.phone || '—')}</td>
+          <td>${c.created_at ? new Date(c.created_at).toLocaleDateString('es-MX') : '—'}</td>
+          <td>${c.orders?.[0]?.count || 0}</td>
+          <td><span class="badge ${c.role === 'admin' ? 'badge-info' : 'badge-success'}">${c.role}</span></td>
+          <td><span class="badge ${c.is_active || c.is_active === null ? 'badge-success' : 'badge-danger'}">${c.is_active || c.is_active === null ? 'Activo' : 'Inactivo'}</span></td>
+        </tr>`).join('')}</tbody>
+      </table></div>`
+    }
+    init()
+  </script>
+</body>
+</html>

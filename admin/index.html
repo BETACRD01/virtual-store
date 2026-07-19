@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel administrativo - NovaStore</title>
+  <link rel="stylesheet" href="../src/css/global.css">
+  <style>.admin-content { max-width: 1200px; }</style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside id="admin-sidebar"></aside>
+    <main class="admin-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+        <h1 style="font-size:var(--font-size-2xl);font-weight:700">Dashboard</h1>
+        <a href="../index.html" style="font-size:0.875rem;color:var(--color-primary)">← Ver tienda</a>
+      </div>
+      <div class="stats-grid" id="stats-cards">
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+      </div>
+      <div class="card" style="padding:var(--spacing-lg);margin-top:var(--spacing-xl)">
+        <h3 style="margin-bottom:1rem">Pedidos recientes</h3>
+        <div id="recent-orders"><div class="skeleton" style="height:200px"></div></div>
+      </div>
+      <div class="card" style="padding:var(--spacing-lg);margin-top:var(--spacing-lg)">
+        <h3 style="margin-bottom:1rem">Ventas del mes</h3>
+        <canvas id="sales-chart" height="250"></canvas>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { requireAdmin } from '../src/js/guards/admin.guard.js'
+    import { supabase } from '../src/js/config/supabase.js'
+    import { formatCurrency } from '../src/js/utils/currency.js'
+    import { Chart, registerables } from 'chart.js'
+    Chart.register(...registerables)
+
+    const base = import.meta.env.BASE_URL
+
+    async function loadSidebar() {
+      const el = document.getElementById('admin-sidebar')
+      el.innerHTML = `<div class="admin-sidebar">
+        <div class="admin-sidebar-logo">⚙️ NovaStore</div>
+        <a href="${base}admin/" class="active">📊 Dashboard</a>
+        <a href="${base}admin/productos.html">📦 Productos</a>
+        <a href="${base}admin/categorias.html">📂 Categorías</a>
+        <a href="${base}admin/pedidos.html">📋 Pedidos</a>
+        <a href="${base}admin/clientes.html">👥 Clientes</a>
+        <hr style="border-color:rgba(255,255,255,0.1);margin:1rem 0">
+        <a href="${base}index.html">← Tienda</a>
+        <a href="#" id="logout-btn">🚪 Salir</a>
+      </div>`
+      document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+        e.preventDefault()
+        const { authService } = await import('../src/js/services/auth.service.js')
+        await authService.signOut()
+        window.location.href = `${base}index.html`
+      })
+    }
+
+    async function init() {
+      const session = await requireAdmin()
+      if (!session) return
+      await loadSidebar()
+
+      const { count: productCount } = await supabase.from('products').select('*', { count: 'exact', head: true })
+      const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true })
+      const { count: pendingOrders } = await supabase.from('orders').select('*', { count: 'exact', head: true }).in('status', ['pending', 'confirmed'])
+      const { count: deliveredOrders } = await supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'delivered')
+      const { data: lowStock } = await supabase.from('products').select('id', { count: 'exact' }).gt('minimum_stock', 0).lt('stock', supabase.rpc('??'))
+      const { data: totalSales } = await supabase.from('orders').select('total').eq('status', 'delivered')
+
+      const totalRevenue = (totalSales || []).reduce((s, o) => s + Number(o.total || 0), 0)
+
+      document.getElementById('stats-cards').innerHTML = `
+        <div class="card stat-card"><div class="stat-card-value">${formatCurrency(totalRevenue)}</div><div class="stat-card-label">Ventas totales</div></div>
+        <div class="card stat-card"><div class="stat-card-value">${pendingOrders || 0}</div><div class="stat-card-label">Pedidos pendientes</div></div>
+        <div class="card stat-card"><div class="stat-card-value">${deliveredOrders || 0}</div><div class="stat-card-label">Entregados</div></div>
+        <div class="card stat-card"><div class="stat-card-value">${userCount || 0}</div><div class="stat-card-label">Usuarios</div></div>
+        <div class="card stat-card"><div class="stat-card-value">${productCount || 0}</div><div class="stat-card-label">Productos activos</div></div>
+        <div class="card stat-card"><div class="stat-card-value">${(lowStock || []).length}</div><div class="stat-card-label">Stock bajo</div></div>
+      `
+
+      const { data: recentOrders } = await supabase.from('orders').select('*, profile:user_id(full_name)').order('created_at', { ascending: false }).limit(5)
+      const orderEl = document.getElementById('recent-orders')
+      if (!recentOrders?.length) { orderEl.innerHTML = '<p style="color:var(--color-gray-500)">Sin pedidos recientes.</p>' }
+      else {
+        orderEl.innerHTML = `<div class="table-container"><table>
+          <thead><tr><th>Pedido</th><th>Cliente</th><th>Total</th><th>Estado</th></tr></thead>
+          <tbody>${recentOrders.map(o => `<tr>
+            <td><a href="${base}admin/detalle-pedido.html?id=${o.id}" style="color:var(--color-primary)">${o.order_number}</a></td>
+            <td>${o.profile?.full_name || '—'}</td>
+            <td>${formatCurrency(o.total)}</td>
+            <td><span class="badge badge-${o.status === 'delivered' ? 'success' : o.status === 'cancelled' ? 'danger' : 'warning'}">${o.status}</span></td>
+          </tr>`).join('')}</tbody>
+        </table></div>`
+      }
+
+      const ctx = document.getElementById('sales-chart')
+      if (ctx) {
+        const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d.toISOString().split('T')[0] })
+        const { data: salesData } = await supabase.from('orders').select('total, created_at').eq('status', 'delivered').gte('created_at', days[0])
+        const dataValues = days.map(day => {
+          const daySales = (salesData || []).filter(s => s.created_at?.startsWith(day))
+          return daySales.reduce((sum, s) => sum + Number(s.total || 0), 0)
+        })
+        new Chart(ctx, {
+          type: 'line',
+          data: { labels: days.map(d => new Date(d).toLocaleDateString('es-MX', { weekday: 'short' })), datasets: [{ label: 'Ventas', data: dataValues, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.4 }] },
+          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + v } } } },
+        })
+      }
+    }
+    init()
+  </script>
+</body>
+</html>

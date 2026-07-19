@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Producto - NovaStore</title>
+  <link rel="stylesheet" href="./src/css/global.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header id="main-header"></header>
+    <main>
+      <div class="container" id="product-container">
+        <div class="product-detail">
+          <div class="product-gallery">
+            <div class="skeleton" style="height:450px;width:100%"></div>
+          </div>
+          <div class="product-info">
+            <div class="skeleton" style="height:40px;width:80%"></div>
+            <div class="skeleton" style="height:20px;width:40%;margin-top:1rem"></div>
+            <div class="skeleton" style="height:60px;width:60%;margin-top:1rem"></div>
+            <div class="skeleton" style="height:100px;width:100%;margin-top:1rem"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer id="main-footer"></footer>
+  </div>
+  <script type="module">
+    import { loadHeader } from './src/js/components/header.js'
+    import { loadFooter } from './src/js/components/footer.js'
+    import { productsService } from './src/js/services/products.service.js'
+    import { cartService } from './src/js/services/cart.service.js'
+    import { profileService } from './src/js/services/profile.service.js'
+    import { authService } from './src/js/services/auth.service.js'
+    import { formatCurrency, calculateDiscount } from './src/js/utils/currency.js'
+    import { safeText } from './src/js/utils/dom.js'
+    import { showSuccess, showError } from './src/js/utils/notifications.js'
+
+    const base = import.meta.env.BASE_URL
+    const params = new URLSearchParams(window.location.search)
+    const productId = params.get('id')
+
+    if (!productId) { window.location.href = `${base}catalogo.html` }
+
+    async function init() {
+      await loadHeader()
+      loadFooter()
+
+      const container = document.getElementById('product-container')
+      try {
+        const product = await productsService.getProductById(productId)
+        if (!product || !product.is_active) { container.innerHTML = '<div class="empty-state" style="padding:4rem 0"><div class="empty-state-icon">📦</div><div class="empty-state-title">Producto no encontrado</div><a href="./catalogo.html" class="btn btn-primary">Ver catálogo</a></div>'; return }
+
+        const images = await productsService.getProductImages(product.id)
+        const allImages = [product.main_image_url, ...images.map(i => i.image_url)].filter(Boolean)
+        const discount = calculateDiscount(product.price, product.offer_price)
+
+        const session = await authService.getSession()
+        const userId = session?.user?.id
+        let isFav = false
+        if (userId) isFav = await profileService.isFavorite(userId, product.id)
+
+        container.innerHTML = `
+          <div class="breadcrumb" style="padding-top:1rem;font-size:0.875rem"><a href="${base}index.html">Inicio</a> / <a href="${base}catalogo.html">Catálogo</a> / ${safeText(product.name)}</div>
+          <div class="product-detail">
+            <div class="product-gallery">
+              <img src="${allImages[0] || ''}" alt="${safeText(product.name)}" class="product-gallery-main" id="main-image" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22450%22 fill=%22%23e2e8f0%22><rect width=%22600%22 height=%22450%22/></svg>'">
+              ${allImages.length > 1 ? `<div class="product-gallery-thumbs">${allImages.map((img, i) => `<img src="${img}" class="product-gallery-thumb ${i === 0 ? 'active' : ''}" data-index="${i}" onerror="this.style.display='none'">`).join('')}</div>` : ''}
+            </div>
+            <div class="product-info">
+              <div class="product-info-category">${safeText(product.category?.name || '')}</div>
+              <h1 class="product-info-name">${safeText(product.name)}</h1>
+              <div class="product-info-price">
+                <span class="product-info-current">${formatCurrency(product.offer_price || product.price)}</span>
+                ${product.offer_price ? `<span class="product-info-old">${formatCurrency(product.price)}</span><span class="badge badge-danger" style="margin-left:0.5rem">-${discount}%</span>` : ''}
+              </div>
+              <div class="product-info-stock">
+                ${product.stock > 0
+                  ? `<span class="text-success">✓ ${product.stock} disponibles</span>`
+                  : `<span class="text-danger">✗ Agotado</span>`}
+                ${product.stock > 0 && product.stock <= product.minimum_stock ? `<span style="display:block;font-size:0.875rem;color:var(--color-warning);margin-top:0.25rem">Últimas unidades</span>` : ''}
+              </div>
+              <div class="product-info-desc">${safeText(product.description)}</div>
+              <div class="product-info-actions">
+                ${product.stock > 0 ? `
+                  <div class="quantity-selector">
+                    <button id="qty-minus" aria-label="Disminuir cantidad">−</button>
+                    <input type="number" id="qty-input" value="1" min="1" max="${product.stock}" readonly aria-label="Cantidad">
+                    <button id="qty-plus" aria-label="Aumentar cantidad">+</button>
+                  </div>
+                  <button class="btn btn-primary btn-lg" id="add-to-cart">🛒 Agregar al carrito</button>
+                ` : ''}
+                ${userId ? `<button class="btn btn-outline ${isFav ? 'btn-danger' : ''}" id="fav-btn">${isFav ? '♥' : '♡'} Favorito</button>` : ''}
+              </div>
+              <p style="margin-top:1rem;font-size:0.875rem;color:var(--color-gray-500)">SKU: ${safeText(product.sku)}</p>
+            </div>
+          </div>
+        `
+
+        if (allImages.length > 1) {
+          const mainImg = document.getElementById('main-image')
+          document.querySelectorAll('.product-gallery-thumb').forEach(thumb => {
+            thumb.addEventListener('click', () => {
+              document.querySelector('.product-gallery-thumb.active')?.classList.remove('active')
+              thumb.classList.add('active')
+              mainImg.src = thumb.src
+            })
+          })
+        }
+
+        const qtyInput = document.getElementById('qty-input')
+        const qtyMinus = document.getElementById('qty-minus')
+        const qtyPlus = document.getElementById('qty-plus')
+        if (qtyMinus) qtyMinus.addEventListener('click', () => { if (Number(qtyInput.value) > 1) qtyInput.value = Number(qtyInput.value) - 1 })
+        if (qtyPlus) qtyPlus.addEventListener('click', () => { if (Number(qtyInput.value) < product.stock) qtyInput.value = Number(qtyInput.value) + 1 })
+
+        const addBtn = document.getElementById('add-to-cart')
+        if (addBtn) {
+          addBtn.addEventListener('click', async () => {
+            const qty = Number(qtyInput.value)
+            if (qty > product.stock) { showError('Stock insuficiente.'); return }
+            try {
+              await cartService.addItem(userId, product.id, qty)
+              showSuccess('Producto agregado al carrito.')
+              await loadHeader()
+            } catch (err) { showError(err.message) }
+          })
+        }
+
+        const favBtn = document.getElementById('fav-btn')
+        if (favBtn) {
+          favBtn.addEventListener('click', async () => {
+            try {
+              if (isFav) { await profileService.removeFavorite(userId, product.id); showSuccess('Eliminado de favoritos.'); isFav = false; favBtn.classList.remove('btn-danger'); favBtn.innerHTML = '♡ Favorito' }
+              else { await profileService.addFavorite(userId, product.id); showSuccess('Añadido a favoritos.'); isFav = true; favBtn.classList.add('btn-danger'); favBtn.innerHTML = '♥ Favorito' }
+            } catch (err) { showError(err.message) }
+          })
+        }
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state" style="padding:4rem 0"><div class="empty-state-icon">⚠️</div><div class="empty-state-title">Error</div><p>${err.message}</p></div>`
+      }
+    }
+    init()
+  </script>
+</body>
+</html>

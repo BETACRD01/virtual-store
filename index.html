@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaStore - Tu tienda online</title>
+  <meta name="description" content="Descubre los mejores productos en NovaStore. Envíos a todo el país.">
+  <link rel="stylesheet" href="./src/css/global.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header id="main-header"></header>
+    <main>
+      <section class="hero">
+        <div class="container">
+          <h1>Descubre productos increíbles</h1>
+          <p>Los mejores productos con los mejores precios y envío rápido a todo el país.</p>
+          <a href="./catalogo.html" class="btn btn-lg" style="background:var(--color-white);color:var(--color-primary)">Ver catálogo</a>
+        </div>
+      </section>
+
+      <section class="section" id="featured-section">
+        <div class="container">
+          <h2 class="section-title">Productos destacados</h2>
+          <div class="grid grid-4" id="featured-products">
+            <div class="skeleton" style="height:320px"></div>
+            <div class="skeleton" style="height:320px"></div>
+            <div class="skeleton" style="height:320px"></div>
+            <div class="skeleton" style="height:320px"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" style="background:var(--color-gray-100)" id="offers-section">
+        <div class="container">
+          <h2 class="section-title">Ofertas especiales</h2>
+          <div class="grid grid-4" id="offer-products">
+            <div class="skeleton" style="height:320px"></div>
+            <div class="skeleton" style="height:320px"></div>
+            <div class="skeleton" style="height:320px"></div>
+            <div class="skeleton" style="height:320px"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <h2 class="section-title">¿Por qué elegirnos?</h2>
+          <div class="benefits">
+            <div class="benefit-card card">
+              <div class="benefit-icon">🚚</div>
+              <div class="benefit-title">Envío rápido</div>
+              <div class="benefit-desc">Entregas en 24-48 horas</div>
+            </div>
+            <div class="benefit-card card">
+              <div class="benefit-icon">🔒</div>
+              <div class="benefit-title">Pago seguro</div>
+              <div class="benefit-desc">Datos protegidos</div>
+            </div>
+            <div class="benefit-card card">
+              <div class="benefit-icon">🔄</div>
+              <div class="benefit-title">Devoluciones</div>
+              <div class="benefit-desc">30 días de garantía</div>
+            </div>
+            <div class="benefit-card card">
+              <div class="benefit-icon">💬</div>
+              <div class="benefit-title">Soporte 24/7</div>
+              <div class="benefit-desc">Ayuda profesional</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer id="main-footer"></footer>
+  </div>
+
+  <script type="module">
+    import { loadHeader } from './src/js/components/header.js'
+    import { loadFooter } from './src/js/components/footer.js'
+    import { productsService } from './src/js/services/products.service.js'
+    import { formatCurrency, calculateDiscount } from './src/js/utils/currency.js'
+    import { safeText } from './src/js/utils/dom.js'
+
+    async function init() {
+      await loadHeader()
+      loadFooter()
+
+      const base = import.meta.env.BASE_URL
+      const featuredEl = document.getElementById('featured-products')
+      const offerEl = document.getElementById('offer-products')
+
+      try {
+        const featured = await productsService.getFeaturedProducts(4)
+        featuredEl.innerHTML = featured.map(p => {
+          const discount = calculateDiscount(p.price, p.offer_price)
+          return `
+            <a href="${base}producto.html?id=${p.id}" class="product-card">
+              <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22 fill=%22%23e2e8f0%22><rect width=%22300%22 height=%22300%22/></svg>'">
+              <div class="product-card-body">
+                <div class="product-card-category">${safeText(p.category?.name || '')}</div>
+                <div class="product-card-name">${safeText(p.name)}</div>
+                <div class="product-card-price">
+                  <span class="product-card-current">${formatCurrency(p.offer_price || p.price)}</span>
+                  ${p.offer_price ? `<span class="product-card-old">${formatCurrency(p.price)}</span>` : ''}
+                  ${discount > 0 ? `<span class="product-card-discount">-${discount}%</span>` : ''}
+                </div>
+              </div>
+            </a>
+          `
+        }).join('')
+      } catch { featuredEl.innerHTML = '<div class="empty-state"><p>Error al cargar productos.</p></div>' }
+
+      try {
+        const offers = await productsService.getOfferProducts(4)
+        offerEl.innerHTML = offers.map(p => {
+          const discount = calculateDiscount(p.price, p.offer_price)
+          return `
+            <a href="${base}producto.html?id=${p.id}" class="product-card">
+              <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22 fill=%22%23e2e8f0%22><rect width=%22300%22 height=%22300%22/></svg>'">
+              <div class="product-card-body">
+                <div class="product-card-category">${safeText(p.category?.name || '')}</div>
+                <div class="product-card-name">${safeText(p.name)}</div>
+                <div class="product-card-price">
+                  <span class="product-card-current">${formatCurrency(p.offer_price || p.price)}</span>
+                  <span class="product-card-old">${formatCurrency(p.price)}</span>
+                  <span class="product-card-discount">-${discount}%</span>
+                </div>
+              </div>
+            </a>
+          `
+        }).join('')
+      } catch { offerEl.innerHTML = '<div class="empty-state"><p>Error al cargar ofertas.</p></div>' }
+    }
+    init()
+  </script>
+</body>
+</html>

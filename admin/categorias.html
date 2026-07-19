@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categorías - Admin NovaStore</title>
+  <link rel="stylesheet" href="../src/css/global.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside id="admin-sidebar"></aside>
+    <main class="admin-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+        <h1 style="font-size:var(--font-size-2xl);font-weight:700">Categorías</h1>
+        <button class="btn btn-primary" id="add-cat-btn">+ Nueva</button>
+      </div>
+      <div class="card" style="padding:var(--spacing-lg)">
+        <div id="categories-table"><div class="skeleton" style="height:300px"></div></div>
+      </div>
+    </main>
+  </div>
+  <script type="module">
+    import { requireAdmin } from '../src/js/guards/admin.guard.js'
+    import { supabase } from '../src/js/config/supabase.js'
+    import { safeText } from '../src/js/utils/dom.js'
+    import { showSuccess, showError } from '../src/js/utils/notifications.js'
+
+    const base = import.meta.env.BASE_URL
+
+    async function loadSidebar() {
+      const el = document.getElementById('admin-sidebar')
+      el.innerHTML = `<div class="admin-sidebar">
+        <div class="admin-sidebar-logo">⚙️ NovaStore</div>
+        <a href="${base}admin/">📊 Dashboard</a>
+        <a href="${base}admin/productos.html">📦 Productos</a>
+        <a href="${base}admin/categorias.html" class="active">📂 Categorías</a>
+        <a href="${base}admin/pedidos.html">📋 Pedidos</a>
+        <a href="${base}admin/clientes.html">👥 Clientes</a>
+        <hr style="border-color:rgba(255,255,255,0.1);margin:1rem 0"><a href="${base}index.html">← Tienda</a><a href="#" id="logout-btn">🚪 Salir</a>
+      </div>`
+      document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+        e.preventDefault()
+        const { authService } = await import('../src/js/services/auth.service.js')
+        await authService.signOut()
+        window.location.href = `${base}index.html`
+      })
+    }
+
+    async function load() {
+      const { data, error } = await supabase.from('categories').select('*').order('name')
+      if (error) { document.getElementById('categories-table').innerHTML = `<p>Error</p>`; return }
+      const el = document.getElementById('categories-table')
+      if (!data?.length) { el.innerHTML = '<div class="empty-state"><p>Sin categorías.</p></div>'; return }
+      el.innerHTML = `<div class="table-container"><table>
+        <thead><tr><th>Nombre</th><th>Slug</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>${data.map(c => `<tr>
+          <td><strong>${safeText(c.name)}</strong></td>
+          <td>${safeText(c.slug)}</td>
+          <td><span class="badge ${c.is_active ? 'badge-success' : 'badge-danger'}">${c.is_active ? 'Activa' : 'Inactiva'}</span></td>
+          <td style="display:flex;gap:0.5rem">
+            <button class="btn btn-sm btn-outline edit-cat" data-id="${c.id}" data-name="${c.name}" data-slug="${c.slug}" data-desc="${c.description || ''}">Editar</button>
+            <button class="btn btn-sm ${c.is_active ? 'btn-secondary' : 'btn-primary'} toggle-cat" data-id="${c.id}" data-active="${c.is_active}">${c.is_active ? 'Desactivar' : 'Activar'}</button>
+          </td>
+        </tr>`).join('')}</tbody>
+      </table></div>`
+
+      el.querySelectorAll('.toggle-cat').forEach(b => b.addEventListener('click', async () => {
+        const id = b.dataset.id, active = b.dataset.active === 'true'
+        await supabase.from('categories').update({ is_active: !active }).eq('id', id)
+        showSuccess(active ? 'Categoría desactivada.' : 'Categoría activada.'); load()
+      }))
+
+      el.querySelectorAll('.edit-cat').forEach(b => b.addEventListener('click', () => {
+        const name = prompt('Nombre:', b.dataset.name)
+        if (!name) return
+        const slug = prompt('Slug:', b.dataset.slug)
+        if (!slug) return
+        const desc = prompt('Descripción:', b.dataset.desc) || ''
+        supabase.from('categories').update({ name: name.trim(), slug: slug.trim(), description: desc }).eq('id', b.dataset.id).then(() => { showSuccess('Categoría actualizada.'); load() })
+      }))
+    }
+
+    document.getElementById('add-cat-btn').addEventListener('click', async () => {
+      const name = prompt('Nombre de la categoría:')
+      if (!name) return
+      const slug = prompt('Slug (ej: electronica):')
+      if (!slug) return
+      const desc = prompt('Descripción (opcional):') || ''
+      const { error } = await supabase.from('categories').insert({ name: name.trim(), slug: slug.trim(), description: desc, is_active: true })
+      if (error) { showError(error.message); return }
+      showSuccess('Categoría creada.'); load()
+    })
+
+    async function init() { await requireAdmin(); await loadSidebar(); load() }
+    init()
+  </script>
+</body>
+</html>

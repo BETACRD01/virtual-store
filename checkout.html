@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - NovaStore</title>
+  <link rel="stylesheet" href="./src/css/global.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header id="main-header"></header>
+    <main>
+      <div class="page-header">
+        <div class="container">
+          <h1>Finalizar compra</h1>
+          <div class="breadcrumb"><a href="./index.html">Inicio</a> / <a href="./carrito.html">Carrito</a> / Checkout</div>
+        </div>
+      </div>
+      <div class="container checkout-page">
+        <div class="checkout-layout">
+          <div id="checkout-form">
+            <div class="text-center" style="padding:3rem 0"><div class="loading-spinner"></div></div>
+          </div>
+          <div id="checkout-summary"></div>
+        </div>
+      </div>
+    </main>
+    <footer id="main-footer"></footer>
+  </div>
+  <script type="module">
+    import { loadHeader } from './src/js/components/header.js'
+    import { loadFooter } from './src/js/components/footer.js'
+    import { authService } from './src/js/services/auth.service.js'
+    import { cartService } from './src/js/services/cart.service.js'
+    import { profileService } from './src/js/services/profile.service.js'
+    import { ordersService } from './src/js/services/orders.service.js'
+    import { formatCurrency } from './src/js/utils/currency.js'
+    import { safeText, disableButton, enableButton } from './src/js/utils/dom.js'
+    import { showSuccess, showError } from './src/js/utils/notifications.js'
+    import { requireAuth } from './src/js/guards/auth.guard.js'
+
+    const base = import.meta.env.BASE_URL
+    let step = 1
+    let selectedAddressId = null
+    let paymentMethod = 'cash'
+
+    async function init() {
+      const session = await requireAuth()
+      if (!session) return
+      await loadHeader()
+      loadFooter()
+
+      const userId = session.user.id
+      const items = await cartService.getCart(userId)
+      if (!items.length) { window.location.href = `${base}carrito.html`; return }
+
+      async function render() {
+        const formEl = document.getElementById('checkout-form')
+        const summaryEl = document.getElementById('checkout-summary')
+        const addresses = await profileService.getAddresses(userId)
+        const subtotal = items.reduce((s, i) => s + (i.quantity || 1) * (i.unit_price || i.product?.offer_price || i.product?.price || 0), 0)
+        const shipping = subtotal > 999 ? 0 : 99
+        const total = subtotal + shipping
+
+        summaryEl.innerHTML = `<div class="card" style="padding:${step === 4 ? '1.5rem' : '1.5rem'};position:sticky;top:100px">
+          <h3 style="margin-bottom:1rem">Resumen</h3>
+          ${items.slice(0, 4).map(i => {
+            const p = i.product || {}
+            return `<div style="display:flex;justify-content:space-between;font-size:0.875rem;padding:0.25rem 0;gap:0.5rem">
+              <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${safeText(p.name || '')} x${i.quantity}</span>
+              <span style="font-weight:600">${formatCurrency((i.unit_price || p.offer_price || p.price || 0) * i.quantity)}</span>
+            </div>`
+          }).join('')}
+          ${items.length > 4 ? `<p style="font-size:0.75rem;color:var(--color-gray-500)">+${items.length - 4} productos más</p>` : ''}
+          <hr style="margin:0.75rem 0;border-color:var(--color-gray-200)">
+          <div style="display:flex;justify-content:space-between;font-size:0.875rem;padding:0.25rem 0"><span>Subtotal</span><span>${formatCurrency(subtotal)}</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.875rem;padding:0.25rem 0"><span>Envío</span><span>${shipping === 0 ? 'Gratis' : formatCurrency(shipping)}</span></div>
+          <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1.125rem;border-top:2px solid var(--color-gray-200);padding-top:0.75rem;margin-top:0.5rem">
+            <span>Total</span><span style="color:var(--color-primary)">${formatCurrency(total)}</span>
+          </div>
+        </div>`
+
+        if (step === 4) {
+          formEl.innerHTML = `<div class="order-success">
+            <div class="order-success-icon">✅</div>
+            <h2>¡Pedido confirmado!</h2>
+            <p style="color:var(--color-gray-500);margin:0.5rem 0 1.5rem">Gracias por tu compra. Recibirás un correo con los detalles.</p>
+            <a href="${base}cuenta/pedidos.html" class="btn btn-primary">Ver mis pedidos</a>
+          </div>`
+          return
+        }
+
+        formEl.innerHTML = `
+          <div class="checkout-step">
+            <div class="checkout-step-title"><span class="checkout-step-number">1</span> Dirección de entrega</div>
+            ${addresses.length ? `<div id="address-list">${addresses.map(a => `<label class="card" style="display:flex;align-items:flex-start;gap:1rem;padding:1rem;margin-bottom:0.5rem;cursor:pointer;${selectedAddressId === a.id ? 'border-color:var(--color-primary)' : ''}">
+              <input type="radio" name="address" value="${a.id}" ${selectedAddressId === a.id ? 'checked' : ''} style="margin-top:0.25rem">
+              <div><strong>${safeText(a.recipient_name)}</strong><br><span style="font-size:0.875rem;color:var(--color-gray-500)">${safeText(a.address_line)}, ${safeText(a.city)}, ${safeText(a.province)}${a.reference ? '<br>' + safeText(a.reference) : ''}${a.phone ? '<br>Tel: ' + safeText(a.phone) : ''}</span></div>
+            </label>`).join('')}</div>` : '<p style="color:var(--color-gray-500);margin-bottom:1rem">No tienes direcciones registradas.</p>'}
+            <button class="btn btn-outline btn-sm" id="new-address-btn">+ Nueva dirección</button>
+          </div>
+
+          <div class="checkout-step">
+            <div class="checkout-step-title"><span class="checkout-step-number">2</span> Método de pago</div>
+            <label class="card" style="display:flex;align-items:center;gap:1rem;padding:1rem;margin-bottom:0.5rem;cursor:pointer;${paymentMethod === 'cash' ? 'border-color:var(--color-primary)' : ''}">
+              <input type="radio" name="payment" value="cash" ${paymentMethod === 'cash' ? 'checked' : ''}> Pago contra entrega
+            </label>
+            <label class="card" style="display:flex;align-items:center;gap:1rem;padding:1rem;cursor:pointer;${paymentMethod === 'transfer' ? 'border-color:var(--color-primary)' : ''}">
+              <input type="radio" name="payment" value="transfer" ${paymentMethod === 'transfer' ? 'checked' : ''}> Transferencia bancaria
+            </label>
+          </div>
+
+          <div class="checkout-step">
+            <div class="checkout-step-title"><span class="checkout-step-number">3</span> Notas (opcional)</div>
+            <textarea class="form-textarea" id="customer-notes" placeholder="¿Alguna nota para tu pedido?" style="min-height:80px"></textarea>
+          </div>
+
+          <button class="btn btn-primary btn-lg btn-block" id="confirm-order-btn" ${!selectedAddressId ? 'disabled' : ''}>Confirmar pedido</button>
+        `
+
+        document.querySelectorAll('input[name="address"]').forEach(r => {
+          r.addEventListener('change', () => { selectedAddressId = r.value; render() })
+        })
+        document.querySelectorAll('input[name="payment"]').forEach(r => {
+          r.addEventListener('change', () => { paymentMethod = r.value; render() })
+        })
+
+        document.getElementById('new-address-btn')?.addEventListener('click', async () => {
+          const province = prompt('Estado / Provincia:')
+          if (!province) return
+          const city = prompt('Ciudad:')
+          if (!city) return
+          const addressLine = prompt('Dirección (calle, número, colonia):')
+          if (!addressLine) return
+          const recipient = prompt('Nombre del destinatario:', session.user.user_metadata?.full_name || '')
+          if (!recipient) return
+          const phone = prompt('Teléfono:')
+          const reference = prompt('Referencia (opcional):')
+          try {
+            await profileService.createAddress({
+              user_id: userId, recipient_name: recipient, phone: phone || '', province, city, address_line: addressLine, reference: reference || '', is_default: !addresses.length,
+            })
+            showSuccess('Dirección registrada.')
+            render()
+          } catch (err) { showError(err.message) }
+        })
+
+        document.getElementById('confirm-order-btn')?.addEventListener('click', async () => {
+          if (!selectedAddressId) { showError('Selecciona una dirección.'); return }
+          const btn = document.getElementById('confirm-order-btn')
+          disableButton(btn)
+          try {
+            await ordersService.createOrder({
+              address_id: selectedAddressId,
+              payment_method: paymentMethod === 'cash' ? 'cash' : 'transfer',
+              customer_notes: document.getElementById('customer-notes')?.value || '',
+              shipping_cost: shipping,
+            })
+            step = 4
+            render()
+            await loadHeader()
+            showSuccess('Pedido creado exitosamente.')
+          } catch (err) {
+            showError(err.message)
+            enableButton(btn)
+          }
+        })
+      }
+
+      if (items.length) {
+        const addrs = await profileService.getAddresses(userId)
+        const defaultAddr = addrs.find(a => a.is_default) || addrs[0]
+        if (defaultAddr) selectedAddressId = defaultAddr.id
+      }
+
+      render()
+    }
+    init()
+  </script>
+</body>
+</html>

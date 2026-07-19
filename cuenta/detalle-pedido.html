@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle del pedido - NovaStore</title>
+  <link rel="stylesheet" href="../src/css/global.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header id="main-header"></header>
+    <main>
+      <div class="container">
+        <div class="account-layout">
+          <aside id="account-sidebar"></aside>
+          <div id="order-detail"><div class="text-center" style="padding:3rem 0"><div class="loading-spinner"></div></div></div>
+        </div>
+      </div>
+    </main>
+    <footer id="main-footer"></footer>
+  </div>
+  <script type="module">
+    import { loadHeader } from '../src/js/components/header.js'
+    import { loadFooter } from '../src/js/components/footer.js'
+    import { loadAccountSidebar } from '../src/js/components/account-sidebar.js'
+    import { ordersService } from '../src/js/services/orders.service.js'
+    import { requireAuth } from '../src/js/guards/auth.guard.js'
+    import { formatCurrency } from '../src/js/utils/currency.js'
+    import { safeText } from '../src/js/utils/dom.js'
+    import { showSuccess, showError } from '../src/js/utils/notifications.js'
+
+    const base = import.meta.env.BASE_URL
+    const statusMap = {
+      pending: { label: 'Pendiente', class: 'badge-warning' },
+      confirmed: { label: 'Confirmado', class: 'badge-info' },
+      preparing: { label: 'Preparando', class: 'badge-info' },
+      shipped: { label: 'Enviado', class: 'badge-info' },
+      delivered: { label: 'Entregado', class: 'badge-success' },
+      cancelled: { label: 'Cancelado', class: 'badge-danger' },
+    }
+
+    async function init() {
+      const session = await requireAuth()
+      if (!session) return
+      await loadHeader()
+      loadFooter()
+      loadAccountSidebar('pedidos')
+
+      const params = new URLSearchParams(window.location.search)
+      const orderId = params.get('id')
+      if (!orderId) { document.getElementById('order-detail').innerHTML = '<div class="empty-state"><p>Pedido no encontrado.</p></div>'; return }
+
+      try {
+        const order = await ordersService.getMyOrderById(orderId)
+        const st = statusMap[order.status] || { label: order.status, class: 'badge-info' }
+        const paySt = {
+          pending: { label: 'Pendiente', class: 'badge-warning' },
+          paid: { label: 'Pagado', class: 'badge-success' },
+          failed: { label: 'Fallido', class: 'badge-danger' },
+          refunded: { label: 'Reembolsado', class: 'badge-info' },
+        }[order.payment_status] || { label: order.payment_status, class: 'badge-info' }
+
+        const el = document.getElementById('order-detail')
+        el.innerHTML = `
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:var(--spacing-xl)">
+              <div>
+                <h1 style="font-size:var(--font-size-2xl);font-weight:700">Pedido ${order.order_number}</h1>
+                <p style="color:var(--color-gray-500)">${new Date(order.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+              </div>
+              <div style="display:flex;gap:0.5rem">
+                <span class="badge ${st.class}" style="font-size:0.875rem">${st.label}</span>
+                <span class="badge ${paySt.class}" style="font-size:0.875rem">${paySt.label}</span>
+              </div>
+            </div>
+
+            ${order.status === 'pending' || order.status === 'confirmed'
+              ? `<button class="btn btn-danger" id="cancel-order-btn">Cancelar pedido</button><br><br>`
+              : ''}
+
+            <div class="card" style="padding:var(--spacing-lg);margin-bottom:var(--spacing-lg)">
+              <h3 style="margin-bottom:1rem">Productos</h3>
+              ${order.order_items.map(i => `<div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--color-gray-100)">
+                <div><strong>${safeText(i.product_name)}</strong><br><span style="font-size:0.875rem;color:var(--color-gray-500)">SKU: ${safeText(i.product_sku)} x${i.quantity}</span></div>
+                <div style="text-align:right"><strong>${formatCurrency(i.subtotal)}</strong><br><span style="font-size:0.875rem;color:var(--color-gray-500)">${formatCurrency(i.unit_price)} c/u</span></div>
+              </div>`).join('')}
+            </div>
+
+            ${order.address ? `<div class="card" style="padding:var(--spacing-lg);margin-bottom:var(--spacing-lg)">
+              <h3 style="margin-bottom:1rem">Dirección de entrega</h3>
+              <p><strong>${safeText(order.address.recipient_name)}</strong><br>
+              ${safeText(order.address.address_line)}<br>
+              ${safeText(order.address.city)}, ${safeText(order.address.province)}<br>
+              ${order.address.phone ? 'Tel: ' + safeText(order.address.phone) : ''}
+              ${order.address.reference ? '<br>Ref: ' + safeText(order.address.reference) : ''}</p>
+            </div>` : ''}
+
+            <div class="card" style="padding:var(--spacing-lg);margin-bottom:var(--spacing-lg)">
+              <h3 style="margin-bottom:1rem">Resumen</h3>
+              <div style="display:flex;justify-content:space-between;padding:0.25rem 0"><span>Subtotal</span><span>${formatCurrency(order.subtotal)}</span></div>
+              <div style="display:flex;justify-content:space-between;padding:0.25rem 0"><span>Envío</span><span>${formatCurrency(order.shipping_cost)}</span></div>
+              ${order.discount > 0 ? `<div style="display:flex;justify-content:space-between;padding:0.25rem 0"><span>Descuento</span><span>-${formatCurrency(order.discount)}</span></div>` : ''}
+              <div style="display:flex;justify-content:space-between;padding:0.5rem 0 0;border-top:2px solid var(--color-gray-200);margin-top:0.5rem;font-weight:700;font-size:1.125rem">
+                <span>Total</span><span style="color:var(--color-primary)">${formatCurrency(order.total)}</span>
+              </div>
+            </div>
+
+            ${order.customer_notes ? `<div class="card" style="padding:var(--spacing-lg);margin-bottom:var(--spacing-lg)">
+              <h3 style="margin-bottom:0.5rem">Notas</h3>
+              <p style="color:var(--color-gray-600)">${safeText(order.customer_notes)}</p>
+            </div>` : ''}
+
+            ${order.order_status_history?.length ? `<div class="card" style="padding:var(--spacing-lg)">
+              <h3 style="margin-bottom:1rem">Historial de estados</h3>
+              ${order.order_status_history.map(h => `<div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--color-gray-100);font-size:0.875rem">
+                <span>${h.previous_status || '—'} → ${h.new_status}</span>
+                <span style="color:var(--color-gray-500)">${new Date(h.created_at).toLocaleString('es-MX')}</span>
+              </div>`).join('')}
+            </div>` : ''}
+          </div>
+        `
+
+        const cancelBtn = document.getElementById('cancel-order-btn')
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', async () => {
+            if (!confirm('¿Cancelar este pedido?')) return
+            try {
+              await ordersService.cancelOrder(orderId)
+              showSuccess('Pedido cancelado.')
+              window.location.reload()
+            } catch (err) { showError(err.message) }
+          })
+        }
+      } catch (err) { showError(err.message) }
+    }
+    init()
+  </script>
+</body>
+</html>

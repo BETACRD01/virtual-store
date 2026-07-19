@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos - Admin NovaStore</title>
+  <link rel="stylesheet" href="../src/css/global.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside id="admin-sidebar"></aside>
+    <main class="admin-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+        <h1 style="font-size:var(--font-size-2xl);font-weight:700">Productos</h1>
+        <a href="producto-formulario.html" class="btn btn-primary">+ Nuevo producto</a>
+      </div>
+      <div class="card" style="padding:var(--spacing-lg)">
+        <div id="products-table"><div class="skeleton" style="height:400px"></div></div>
+      </div>
+    </main>
+  </div>
+  <script type="module">
+    import { requireAdmin } from '../src/js/guards/admin.guard.js'
+    import { supabase } from '../src/js/config/supabase.js'
+    import { formatCurrency } from '../src/js/utils/currency.js'
+    import { safeText } from '../src/js/utils/dom.js'
+    import { showSuccess, showError } from '../src/js/utils/notifications.js'
+
+    const base = import.meta.env.BASE_URL
+
+    async function loadSidebar() {
+      const el = document.getElementById('admin-sidebar')
+      el.innerHTML = `<div class="admin-sidebar">
+        <div class="admin-sidebar-logo">⚙️ NovaStore</div>
+        <a href="${base}admin/">📊 Dashboard</a>
+        <a href="${base}admin/productos.html" class="active">📦 Productos</a>
+        <a href="${base}admin/categorias.html">📂 Categorías</a>
+        <a href="${base}admin/pedidos.html">📋 Pedidos</a>
+        <a href="${base}admin/clientes.html">👥 Clientes</a>
+        <hr style="border-color:rgba(255,255,255,0.1);margin:1rem 0"><a href="${base}index.html">← Tienda</a><a href="#" id="logout-btn">🚪 Salir</a>
+      </div>`
+      document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+        e.preventDefault()
+        const { authService } = await import('../src/js/services/auth.service.js')
+        await authService.signOut()
+        window.location.href = `${base}index.html`
+      })
+    }
+
+    async function init() {
+      await requireAdmin()
+      await loadSidebar()
+
+      async function load() {
+        const { data, error } = await supabase.from('products').select('*, category:categories(name)').order('created_at', { ascending: false })
+        if (error) { document.getElementById('products-table').innerHTML = `<p>Error: ${error.message}</p>`; return }
+        const el = document.getElementById('products-table')
+        if (!data?.length) { el.innerHTML = '<div class="empty-state"><p>No hay productos.</p></div>'; return }
+        el.innerHTML = `<div class="table-container"><table>
+          <thead><tr><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody>${data.map(p => `<tr>
+            <td><a href="${base}admin/producto-formulario.html?id=${p.id}" style="color:var(--color-primary)">${safeText(p.name)}</a></td>
+            <td>${safeText(p.category?.name || '—')}</td>
+            <td>${formatCurrency(p.offer_price || p.price)}${p.offer_price ? ` <span style="font-size:0.75rem;color:var(--color-gray-400);text-decoration:line-through">${formatCurrency(p.price)}</span>` : ''}</td>
+            <td>${p.stock} ${p.stock <= p.minimum_stock ? '<span class="badge badge-danger">Bajo</span>' : ''}</td>
+            <td><span class="badge ${p.is_active ? 'badge-success' : 'badge-danger'}">${p.is_active ? 'Activo' : 'Inactivo'}</span></td>
+            <td style="display:flex;gap:0.5rem">
+              <a href="${base}admin/producto-formulario.html?id=${p.id}" class="btn btn-sm btn-outline">Editar</a>
+              <button class="btn btn-sm ${p.is_active ? 'btn-secondary' : 'btn-primary'} toggle-product" data-id="${p.id}" data-active="${p.is_active}">${p.is_active ? 'Desactivar' : 'Activar'}</button>
+            </td>
+          </tr>`).join('')}</tbody>
+        </table></div>`
+
+        el.querySelectorAll('.toggle-product').forEach(btn => btn.addEventListener('click', async () => {
+          const id = btn.dataset.id, active = btn.dataset.active === 'true'
+          await supabase.from('products').update({ is_active: !active }).eq('id', id)
+          showSuccess(active ? 'Producto desactivado.' : 'Producto activado.')
+          load()
+        }))
+      }
+
+      load()
+    }
+    init()
+  </script>
+</body>
+</html>

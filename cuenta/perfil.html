@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi perfil - NovaStore</title>
+  <link rel="stylesheet" href="../src/css/global.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header id="main-header"></header>
+    <main>
+      <div class="container">
+        <div class="account-layout">
+          <aside id="account-sidebar"></aside>
+          <div>
+            <h1 style="font-size:var(--font-size-2xl);font-weight:700;margin-bottom:var(--spacing-xl)">Mi perfil</h1>
+            <div class="card" style="padding:var(--spacing-xl)">
+              <form id="profile-form" novalidate>
+                <div class="form-group">
+                  <label class="form-label" for="full-name">Nombre completo</label>
+                  <input type="text" id="full-name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="email">Correo electrónico</label>
+                  <input type="email" id="email" class="form-input" disabled style="background:var(--color-gray-100)">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="phone">Teléfono</label>
+                  <input type="tel" id="phone" class="form-input" placeholder="+52 55 1234 5678">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Avatar</label>
+                  <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp">
+                  <div id="avatar-preview" style="margin-top:0.5rem"></div>
+                </div>
+                <hr style="margin:1.5rem 0;border-color:var(--color-gray-200)">
+                <h3 style="margin-bottom:1rem">Cambiar contraseña</h3>
+                <div class="form-group">
+                  <label class="form-label" for="new-password">Nueva contraseña</label>
+                  <input type="password" id="new-password" class="form-input" placeholder="Dejar vacío para no cambiar">
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-btn">Guardar cambios</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer id="main-footer"></footer>
+  </div>
+  <script type="module">
+    import { loadHeader } from '../src/js/components/header.js'
+    import { loadFooter } from '../src/js/components/footer.js'
+    import { loadAccountSidebar } from '../src/js/components/account-sidebar.js'
+    import { authService } from '../src/js/services/auth.service.js'
+    import { storageService } from '../src/js/services/storage.service.js'
+    import { requireAuth } from '../src/js/guards/auth.guard.js'
+    import { showSuccess, showError } from '../src/js/utils/notifications.js'
+    import { disableButton, enableButton } from '../src/js/utils/dom.js'
+    import { validatePassword } from '../src/js/utils/validators.js'
+
+    async function init() {
+      const session = await requireAuth()
+      if (!session) return
+      await loadHeader()
+      loadFooter()
+      loadAccountSidebar('perfil')
+
+      const userId = session.user.id
+      const profile = await authService.getProfile(userId)
+
+      document.getElementById('full-name').value = profile?.full_name || ''
+      document.getElementById('email').value = session.user.email || ''
+      document.getElementById('phone').value = profile?.phone || ''
+
+      document.getElementById('profile-form').addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const btn = document.getElementById('save-btn')
+        disableButton(btn)
+        try {
+          await authService.updateProfile(userId, {
+            full_name: document.getElementById('full-name').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+          })
+          const newPass = document.getElementById('new-password').value
+          if (newPass) {
+            const err = validatePassword(newPass)
+            if (err) { showError(err); enableButton(btn); return }
+            await authService.updatePassword(newPass)
+          }
+          showSuccess('Perfil actualizado.')
+          enableButton(btn)
+        } catch (err) { showError(err.message); enableButton(btn) }
+      })
+
+      document.getElementById('avatar-input').addEventListener('change', async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+        try {
+          const url = await storageService.uploadAvatar(file, userId)
+          await authService.updateProfile(userId, { avatar_url: url })
+          showSuccess('Avatar actualizado.')
+        } catch (err) { showError(err.message) }
+      })
+    }
+    init()
+  </script>
+</body>
+</html>

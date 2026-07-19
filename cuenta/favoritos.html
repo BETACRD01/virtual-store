@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis favoritos - NovaStore</title>
+  <link rel="stylesheet" href="../src/css/global.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header id="main-header"></header>
+    <main>
+      <div class="container">
+        <div class="account-layout">
+          <aside id="account-sidebar"></aside>
+          <div>
+            <h1 style="font-size:var(--font-size-2xl);font-weight:700;margin-bottom:var(--spacing-xl)">Mis favoritos</h1>
+            <div class="grid grid-4" id="favorites-list"><p>...</p></div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer id="main-footer"></footer>
+  </div>
+  <script type="module">
+    import { loadHeader } from '../src/js/components/header.js'
+    import { loadFooter } from '../src/js/components/footer.js'
+    import { loadAccountSidebar } from '../src/js/components/account-sidebar.js'
+    import { profileService } from '../src/js/services/profile.service.js'
+    import { requireAuth } from '../src/js/guards/auth.guard.js'
+    import { formatCurrency, calculateDiscount } from '../src/js/utils/currency.js'
+    import { safeText } from '../src/js/utils/dom.js'
+    import { showSuccess, showError } from '../src/js/utils/notifications.js'
+
+    const base = import.meta.env.BASE_URL
+
+    async function init() {
+      const session = await requireAuth()
+      if (!session) return
+      await loadHeader()
+      loadFooter()
+      loadAccountSidebar('favoritos')
+
+      try {
+        const favs = await profileService.getFavorites(session.user.id)
+        const el = document.getElementById('favorites-list')
+        if (!favs.length) {
+          el.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">♥</div><div class="empty-state-title">Sin favoritos</div><p>Explora productos y agrega tus favoritos.</p><a href="../catalogo.html" class="btn btn-primary" style="margin-top:1rem">Ver productos</a></div>'
+          return
+        }
+        el.innerHTML = favs.map(f => {
+          const p = f.product
+          if (!p) return ''
+          const discount = calculateDiscount(p.price, p.offer_price)
+          return `<div class="product-card">
+            <a href="${base}producto.html?id=${p.id}">
+              <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22 fill=%22%23e2e8f0%22><rect width=%22300%22 height=%22300%22/></svg>'">
+              <div class="product-card-body">
+                <div class="product-card-name">${safeText(p.name)}</div>
+                <div class="product-card-price">
+                  <span class="product-card-current">${formatCurrency(p.offer_price || p.price)}</span>
+                  ${p.offer_price ? `<span class="product-card-old">${formatCurrency(p.price)}</span>` : ''}
+                  ${discount > 0 ? `<span class="product-card-discount">-${discount}%</span>` : ''}
+                </div>
+              </div>
+            </a>
+            <div style="padding:0 1rem 1rem">
+              <button class="btn btn-sm btn-danger btn-block remove-fav" data-id="${p.id}">Eliminar</button>
+            </div>
+          </div>`
+        }).join('')
+        el.querySelectorAll('.remove-fav').forEach(btn => btn.addEventListener('click', async () => {
+          await profileService.removeFavorite(session.user.id, btn.dataset.id)
+          showSuccess('Eliminado de favoritos.')
+          init()
+        }))
+      } catch (err) { showError(err.message) }
+    }
+    init()
+  </script>
+</body>
+</html>

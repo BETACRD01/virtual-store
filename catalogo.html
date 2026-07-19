@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo - NovaStore</title>
+  <link rel="stylesheet" href="./src/css/global.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header id="main-header"></header>
+    <main>
+      <div class="page-header">
+        <div class="container">
+          <h1>Catálogo de productos</h1>
+          <div class="breadcrumb"><a href="./index.html">Inicio</a> / Catálogo</div>
+        </div>
+      </div>
+      <div class="container" style="padding-top:var(--spacing-xl)">
+        <div class="filters" id="filters">
+          <select id="filter-category" aria-label="Filtrar por categoría">
+            <option value="">Todas las categorías</option>
+          </select>
+          <select id="filter-sort" aria-label="Ordenar por">
+            <option value="">Más recientes</option>
+            <option value="price_asc">Precio: menor a mayor</option>
+            <option value="price_desc">Precio: mayor a menor</option>
+            <option value="name_asc">Nombre: A-Z</option>
+            <option value="name_desc">Nombre: Z-A</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.875rem">
+            <input type="checkbox" id="filter-offers"> Solo ofertas
+          </label>
+          <input type="text" id="filter-search" placeholder="Buscar..." aria-label="Buscar en catálogo">
+        </div>
+        <div class="grid grid-4" id="products-container">
+          <div class="skeleton" style="height:320px"></div>
+          <div class="skeleton" style="height:320px"></div>
+          <div class="skeleton" style="height:320px"></div>
+          <div class="skeleton" style="height:320px"></div>
+        </div>
+        <div id="pagination" style="text-align:center;padding:2rem 0"></div>
+      </div>
+    </main>
+    <footer id="main-footer"></footer>
+  </div>
+  <script type="module">
+    import { loadHeader } from './src/js/components/header.js'
+    import { loadFooter } from './src/js/components/footer.js'
+    import { productsService } from './src/js/services/products.service.js'
+    import { formatCurrency, calculateDiscount } from './src/js/utils/currency.js'
+    import { safeText, debounce } from './src/js/utils/dom.js'
+
+    const base = import.meta.env.BASE_URL
+    let currentPage = 1
+    const limit = 12
+
+    async function init() {
+      await loadHeader()
+      loadFooter()
+
+      const params = new URLSearchParams(window.location.search)
+      const searchParam = params.get('busqueda') || ''
+      const categoryParam = params.get('categoria') || ''
+      const offersParam = params.get('ofertas') === 'true'
+
+      const cats = await productsService.getActiveCategories()
+      const catSelect = document.getElementById('filter-category')
+      cats.forEach(c => {
+        const opt = document.createElement('option')
+        opt.value = c.id; opt.textContent = c.name
+        if (c.id === categoryParam) opt.selected = true
+        catSelect.appendChild(opt)
+      })
+
+      document.getElementById('filter-search').value = searchParam
+      document.getElementById('filter-offers').checked = offersParam
+
+      async function loadProducts() {
+        const container = document.getElementById('products-container')
+        container.innerHTML = Array(4).fill('<div class="skeleton" style="height:320px"></div>').join('')
+        try {
+          const result = await productsService.getProducts({
+            categoryId: document.getElementById('filter-category').value || undefined,
+            search: document.getElementById('filter-search').value || undefined,
+            offers: document.getElementById('filter-offers').checked || undefined,
+            sort: document.getElementById('filter-sort').value || undefined,
+            page: currentPage,
+            limit,
+          })
+          if (!result.products.length) {
+            container.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📦</div><div class="empty-state-title">No hay productos</div><p>Intenta con otros filtros.</p></div>'
+          } else {
+            container.innerHTML = result.products.map(p => {
+              const discount = calculateDiscount(p.price, p.offer_price)
+              return `<a href="${base}producto.html?id=${p.id}" class="product-card">
+                <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22 fill=%22%23e2e8f0%22><rect width=%22300%22 height=%22300%22/></svg>'">
+                <div class="product-card-body">
+                  <div class="product-card-category">${safeText(p.category?.name || '')}</div>
+                  <div class="product-card-name">${safeText(p.name)}</div>
+                  <div class="product-card-price">
+                    <span class="product-card-current">${formatCurrency(p.offer_price || p.price)}</span>
+                    ${p.offer_price ? `<span class="product-card-old">${formatCurrency(p.price)}</span>` : ''}
+                    ${discount > 0 ? `<span class="product-card-discount">-${discount}%</span>` : ''}
+                  </div>
+                </div>
+              </a>`
+            }).join('')
+          }
+          const totalPages = Math.ceil(result.count / limit)
+          const pagEl = document.getElementById('pagination')
+          if (totalPages > 1) {
+            pagEl.innerHTML = `<div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
+              ${currentPage > 1 ? `<button class="btn btn-outline btn-sm" data-page="${currentPage - 1}">Anterior</button>` : ''}
+              <span style="padding:0.5rem 1rem;font-weight:600">Página ${currentPage} de ${totalPages}</span>
+              ${currentPage < totalPages ? `<button class="btn btn-outline btn-sm" data-page="${currentPage + 1}">Siguiente</button>` : ''}
+            </div>`
+            pagEl.querySelectorAll('[data-page]').forEach(btn => btn.addEventListener('click', () => { currentPage = Number(btn.dataset.page); loadProducts(); window.scrollTo(0, 0) }))
+          } else { pagEl.innerHTML = '' }
+        } catch {
+          container.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">⚠️</div><div class="empty-state-title">Error</div><p>No se pudieron cargar los productos.</p></div>'
+        }
+      }
+
+      document.getElementById('filter-category').addEventListener('change', () => { currentPage = 1; loadProducts() })
+      document.getElementById('filter-sort').addEventListener('change', () => { currentPage = 1; loadProducts() })
+      document.getElementById('filter-offers').addEventListener('change', () => { currentPage = 1; loadProducts() })
+      document.getElementById('filter-search').addEventListener('input', debounce(() => { currentPage = 1; loadProducts() }, 400))
+
+      await loadProducts()
+    }
+    init()
+  </script>
+</body>
+</html>

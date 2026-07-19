@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis direcciones - NovaStore</title>
+  <link rel="stylesheet" href="../src/css/global.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header id="main-header"></header>
+    <main>
+      <div class="container">
+        <div class="account-layout">
+          <aside id="account-sidebar"></aside>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-xl)">
+              <h1 style="font-size:var(--font-size-2xl);font-weight:700">Mis direcciones</h1>
+              <button class="btn btn-primary" id="add-address-btn">+ Agregar</button>
+            </div>
+            <div id="addresses-list"><p style="color:var(--color-gray-500)">Cargando...</p></div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer id="main-footer"></footer>
+  </div>
+  <script type="module">
+    import { loadHeader } from '../src/js/components/header.js'
+    import { loadFooter } from '../src/js/components/footer.js'
+    import { loadAccountSidebar } from '../src/js/components/account-sidebar.js'
+    import { profileService } from '../src/js/services/profile.service.js'
+    import { requireAuth } from '../src/js/guards/auth.guard.js'
+    import { safeText } from '../src/js/utils/dom.js'
+    import { showSuccess, showError } from '../src/js/utils/notifications.js'
+
+    async function init() {
+      const session = await requireAuth()
+      if (!session) return
+      await loadHeader()
+      loadFooter()
+      loadAccountSidebar('direcciones')
+
+      const userId = session.user.id
+
+      async function render() {
+        const addresses = await profileService.getAddresses(userId)
+        const el = document.getElementById('addresses-list')
+        if (!addresses.length) {
+          el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📍</div><div class="empty-state-title">Sin direcciones</div><p>Agrega una dirección para recibir tus pedidos.</p></div>'
+          return
+        }
+        el.innerHTML = addresses.map(a => `<div class="card" style="padding:var(--spacing-lg);margin-bottom:var(--spacing-md)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <strong>${safeText(a.recipient_name)}</strong> ${a.is_default ? '<span class="badge badge-info">Predeterminada</span>' : ''}
+              <p style="font-size:0.875rem;color:var(--color-gray-500);margin-top:0.25rem">
+                ${safeText(a.address_line)}<br>
+                ${safeText(a.city)}, ${safeText(a.province)}<br>
+                ${a.phone ? 'Tel: ' + safeText(a.phone) : ''}
+                ${a.reference ? '<br>Ref: ' + safeText(a.reference) : ''}
+              </p>
+            </div>
+            <div style="display:flex;gap:0.5rem">
+              ${!a.is_default ? `<button class="btn btn-sm btn-outline set-default" data-id="${a.id}">Predeterminar</button>` : ''}
+              <button class="btn btn-sm btn-danger delete-address" data-id="${a.id}">Eliminar</button>
+            </div>
+          </div>
+        </div>`).join('')
+
+        el.querySelectorAll('.set-default').forEach(btn => btn.addEventListener('click', async () => {
+          await profileService.setDefaultAddress(userId, btn.dataset.id); showSuccess('Dirección predeterminada actualizada.'); render()
+        }))
+        el.querySelectorAll('.delete-address').forEach(btn => btn.addEventListener('click', async () => {
+          if (!confirm('¿Eliminar esta dirección?')) return
+          await profileService.deleteAddress(btn.dataset.id); showSuccess('Dirección eliminada.'); render()
+        }))
+      }
+
+      document.getElementById('add-address-btn').addEventListener('click', async () => {
+        const recipient = prompt('Nombre del destinatario:')
+        if (!recipient) return
+        const phone = prompt('Teléfono:')
+        const province = prompt('Estado / Provincia:')
+        if (!province) return
+        const city = prompt('Ciudad:')
+        if (!city) return
+        const addressLine = prompt('Dirección (calle, número, colonia):')
+        if (!addressLine) return
+        const reference = prompt('Referencia (opcional):')
+        try {
+          await profileService.createAddress({ user_id: userId, recipient_name: recipient, phone: phone || '', province, city, address_line: addressLine, reference: reference || '', is_default: false })
+          showSuccess('Dirección agregada.'); render()
+        } catch (err) { showError(err.message) }
+      })
+
+      render()
+    }
+    init()
+  </script>
+</body>
+</html>
