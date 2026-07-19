@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NovaStore - Tu tienda online</title>
   <meta name="description" content="Descubre los mejores productos en NovaStore. Envíos a todo el país.">
-  <script type="module" crossorigin src="/virtual-store/assets/main-B3zx1syu.js"></script>
-  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.service-DJHmt2aS.js">
-  <link rel="modulepreload" crossorigin href="/virtual-store/assets/footer-DYB8yhsx.js">
+  <script type="module" crossorigin src="/virtual-store/assets/main-Dl9Z1uLT.js"></script>
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.service-BxJS2Ta1.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/footer-DkVHHXvB.js">
   <link rel="modulepreload" crossorigin href="/virtual-store/assets/currency-BUz-WTj3.js">
   <link rel="modulepreload" crossorigin href="/virtual-store/assets/dom-Dz1M3mpB.js">
-  <link rel="stylesheet" crossorigin href="/virtual-store/assets/auth-acGcELYW.css">
+  <link rel="stylesheet" crossorigin href="/virtual-store/assets/auth-Azh6cvs6.css">
 </head>
 <body>
   <div class="page-wrapper">
@@ -18,15 +18,58 @@
     <main>
       <section class="hero">
         <div class="container">
-          <h1>Descubre productos increíbles</h1>
-          <p>Los mejores productos con los mejores precios y envío rápido a todo el país.</p>
-          <a href="./pagina/catalogo.html" class="btn btn-lg" style="background:var(--color-white);color:var(--color-primary)">Ver catálogo</a>
+          <div class="hero-grid">
+            <div class="hero-content">
+              <div class="hero-badge">✨ Nueva colección 2026</div>
+              <h1>Descubre productos <span>increíbles</span></h1>
+              <p>Los mejores productos con los mejores precios y envío rápido a todo el país.</p>
+              <div class="hero-actions">
+                <a href="./pagina/catalogo.html" class="btn btn-accent btn-lg">Ver catálogo →</a>
+                <a href="./pagina/catalogo.html?ofertas=true" class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,0.15);color:var(--color-white)">Ofertas</a>
+              </div>
+            </div>
+            <div class="hero-visual">
+              <div class="hero-visual-inner">
+                <div class="hero-visual-card">
+                  <div class="hero-visual-row">
+                    <div class="hero-visual-icon">🔥</div>
+                    <div class="hero-visual-text">
+                      <div class="hero-visual-title">Hasta 50% OFF</div>
+                      <div class="hero-visual-price">En productos <span>seleccionados</span></div>
+                    </div>
+                  </div>
+                  <div style="height:1px;background:rgba(255,255,255,0.06);margin:0.75rem 0"></div>
+                  <div class="hero-visual-row">
+                    <div class="hero-visual-icon">🚚</div>
+                    <div class="hero-visual-text">
+                      <div class="hero-visual-title">Envío gratis</div>
+                      <div class="hero-visual-price">En compras <span>mayores a $999</span></div>
+                    </div>
+                  </div>
+                  <div style="height:1px;background:rgba(255,255,255,0.06);margin:0.75rem 0"></div>
+                  <div class="hero-visual-row">
+                    <div class="hero-visual-icon">🛡️</div>
+                    <div class="hero-visual-text">
+                      <div class="hero-visual-title">Compra segura</div>
+                      <div class="hero-visual-price">Datos <span>protegidos</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       <section class="section" id="featured-section">
         <div class="container">
-          <h2 class="section-title">Productos destacados</h2>
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Productos destacados</h2>
+              <p class="section-subtitle">Lo más popular de la semana</p>
+            </div>
+            <a href="./pagina/catalogo.html" class="section-link">Ver todos →</a>
+          </div>
           <div class="grid grid-4" id="featured-products">
             <div class="skeleton" style="height:320px"></div>
             <div class="skeleton" style="height:320px"></div>
@@ -38,7 +81,13 @@
 
       <section class="section" style="background:var(--color-gray-100)" id="offers-section">
         <div class="container">
-          <h2 class="section-title">Ofertas especiales</h2>
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Ofertas especiales</h2>
+              <p class="section-subtitle">No te pierdas estos precios</p>
+            </div>
+            <a href="./pagina/catalogo.html?ofertas=true" class="section-link">Ver ofertas →</a>
+          </div>
           <div class="grid grid-4" id="offer-products">
             <div class="skeleton" style="height:320px"></div>
             <div class="skeleton" style="height:320px"></div>
@@ -49,8 +98,9 @@
       </section>
 
       <section class="section">
-        <div class="container">
-          <h2 class="section-title">¿Por qué elegirnos?</h2>
+        <div class="container" style="text-align:center">
+          <h2 class="section-title" style="margin-bottom:var(--spacing-xs)">¿Por qué elegirnos?</h2>
+          <p class="section-subtitle" style="margin-bottom:var(--spacing-2xl);max-width:500px;margin-left:auto;margin-right:auto">La mejor experiencia de compra online</p>
           <div class="benefits">
             <div class="benefit-card card">
               <div class="benefit-icon">🚚</div>
