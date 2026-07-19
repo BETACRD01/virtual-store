@@ -52,7 +52,7 @@
         const orders = await ordersService.getMyOrders()
         const el = document.getElementById('orders-list')
         if (!orders.length) {
-          el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><div class="empty-state-title">Sin pedidos</div><p>Aún no has realizado ninguna compra.</p><a href="../catalogo.html" class="btn btn-primary" style="margin-top:1rem">Ver productos</a></div>'
+          el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><div class="empty-state-title">Sin pedidos</div><p>Aún no has realizado ninguna compra.</p><a href="../pagina/catalogo.html" class="btn btn-primary" style="margin-top:1rem">Ver productos</a></div>'
           return
         }
         el.innerHTML = orders.map(o => {

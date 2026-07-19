@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carrito - NovaStore</title>
-  <link rel="stylesheet" href="./src/css/global.css">
+  <link rel="stylesheet" href="../src/css/global.css">
 </head>
 <body>
   <div class="page-wrapper">
@@ -28,13 +28,13 @@
     <footer id="main-footer"></footer>
   </div>
   <script type="module">
-    import { loadHeader } from './src/js/components/header.js'
-    import { loadFooter } from './src/js/components/footer.js'
-    import { cartService } from './src/js/services/cart.service.js'
-    import { authService } from './src/js/services/auth.service.js'
-    import { formatCurrency } from './src/js/utils/currency.js'
-    import { safeText } from './src/js/utils/dom.js'
-    import { showSuccess, showError } from './src/js/utils/notifications.js'
+    import { loadHeader } from '../src/js/components/header.js'
+    import { loadFooter } from '../src/js/components/footer.js'
+    import { cartService } from '../src/js/services/cart.service.js'
+    import { authService } from '../src/js/services/auth.service.js'
+    import { formatCurrency } from '../src/js/utils/currency.js'
+    import { safeText } from '../src/js/utils/dom.js'
+    import { showSuccess, showError } from '../src/js/utils/notifications.js'
 
     const base = import.meta.env.BASE_URL
 
@@ -62,7 +62,7 @@
           return `<div class="card cart-item">
             <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="cart-item-image" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 fill=%22%23e2e8f0%22><rect width=%22100%22 height=%22100%22/></svg>'">
             <div>
-              <div class="cart-item-name"><a href="${base}producto.html?id=${p.id}">${safeText(p.name || 'Producto')}</a></div>
+              <div class="cart-item-name"><a href="${base}pagina/producto.html?id=${p.id}">${safeText(p.name || 'Producto')}</a></div>
               <div class="cart-item-price">${formatCurrency(price)} c/u</div>
               <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem">
                 <div class="quantity-selector" style="height:32px">
@@ -93,7 +93,7 @@
           <button class="btn btn-secondary btn-block" id="clear-cart-btn" style="margin-top:0.5rem">Vaciar carrito</button>
         </div>`
 
-        document.getElementById('checkout-btn')?.addEventListener('click', () => { window.location.href = `${base}checkout.html` })
+        document.getElementById('checkout-btn')?.addEventListener('click', () => { window.location.href = `${base}pagina/checkout.html` })
         document.getElementById('clear-cart-btn')?.addEventListener('click', async () => { await cartService.clearCart(userId); render(); await loadHeader() })
 
         document.querySelectorAll('.qty-btn').forEach(btn => {

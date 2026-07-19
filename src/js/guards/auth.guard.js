@@ -3,7 +3,7 @@ import { authService } from '../services/auth.service.js'
 export async function requireAuth() {
   const session = await authService.getSession()
   if (!session) {
-    window.location.href = `${import.meta.env.BASE_URL}login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+    window.location.href = `${import.meta.env.BASE_URL}auth/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
     return null
   }
   return session

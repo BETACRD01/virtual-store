@@ -21,13 +21,13 @@ export async function loadHeader() {
 
   const userMenu = user
     ? `<a href="${base}cuenta/perfil.html" title="Mi cuenta" aria-label="Mi cuenta">${profile?.full_name?.[0]?.toUpperCase() || '👤'}</a>`
-    : `<a href="${base}login.html" class="btn btn-primary btn-sm">Iniciar sesión</a>`
+    : `<a href="${base}auth/login.html" class="btn btn-primary btn-sm">Iniciar sesión</a>`
 
   let categoriesHtml = ''
   try {
     const cats = await productsService.getActiveCategories()
     categoriesHtml = cats.slice(0, 6).map(c =>
-      `<a href="${base}catalogo.html?categoria=${c.id}" data-category-id="${c.id}">${c.name}</a>`
+      `<a href="${base}pagina/catalogo.html?categoria=${c.id}" data-category-id="${c.id}">${c.name}</a>`
     ).join('')
   } catch {}
 
@@ -47,7 +47,7 @@ export async function loadHeader() {
           <div class="header-actions">
             ${role === 'admin' ? `<a href="${base}admin/" title="Panel admin">⚙️</a>` : ''}
             ${userMenu}
-            <a href="${base}carrito.html" title="Carrito" aria-label="Carrito de compras">
+            <a href="${base}pagina/carrito.html" title="Carrito" aria-label="Carrito de compras">
               🛒
               ${cartCount > 0 ? `<span class="cart-count" id="cart-count">${cartCount > 99 ? '99+' : cartCount}</span>` : ''}
             </a>
@@ -59,7 +59,7 @@ export async function loadHeader() {
       <div class="container">
         <div class="nav-list">
           <a href="${base}index.html">Inicio</a>
-          <a href="${base}catalogo.html">Todos los productos</a>
+          <a href="${base}pagina/catalogo.html">Todos los productos</a>
           ${categoriesHtml}
         </div>
       </div>
@@ -73,7 +73,7 @@ export async function loadHeader() {
       clearTimeout(timeout)
       timeout = setTimeout(() => {
         const q = searchInput.value.trim()
-        window.location.href = `${base}catalogo.html${q ? `?busqueda=${encodeURIComponent(q)}` : ''}`
+        window.location.href = `${base}pagina/catalogo.html${q ? `?busqueda=${encodeURIComponent(q)}` : ''}`
       }, 500)
     })
   }

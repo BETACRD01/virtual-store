@@ -45,7 +45,7 @@
         const favs = await profileService.getFavorites(session.user.id)
         const el = document.getElementById('favorites-list')
         if (!favs.length) {
-          el.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">♥</div><div class="empty-state-title">Sin favoritos</div><p>Explora productos y agrega tus favoritos.</p><a href="../catalogo.html" class="btn btn-primary" style="margin-top:1rem">Ver productos</a></div>'
+          el.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">♥</div><div class="empty-state-title">Sin favoritos</div><p>Explora productos y agrega tus favoritos.</p><a href="../pagina/catalogo.html" class="btn btn-primary" style="margin-top:1rem">Ver productos</a></div>'
           return
         }
         el.innerHTML = favs.map(f => {
@@ -53,7 +53,7 @@
           if (!p) return ''
           const discount = calculateDiscount(p.price, p.offer_price)
           return `<div class="product-card">
-            <a href="${base}producto.html?id=${p.id}">
+            <a href="${base}pagina/producto.html?id=${p.id}">
               <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22 fill=%22%23e2e8f0%22><rect width=%22300%22 height=%22300%22/></svg>'">
               <div class="product-card-body">
                 <div class="product-card-name">${safeText(p.name)}</div>

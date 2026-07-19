@@ -13,13 +13,13 @@ export function loadFooter() {
           <div>
             <h3>Tienda</h3>
             <a href="${base}index.html">Inicio</a>
-            <a href="${base}catalogo.html">Catálogo</a>
-            <a href="${base}catalogo.html?ofertas=true">Ofertas</a>
+            <a href="${base}pagina/catalogo.html">Catálogo</a>
+            <a href="${base}pagina/catalogo.html?ofertas=true">Ofertas</a>
           </div>
           <div>
             <h3>Mi cuenta</h3>
-            <a href="${base}login.html">Iniciar sesión</a>
-            <a href="${base}registro.html">Registrarse</a>
+            <a href="${base}auth/login.html">Iniciar sesión</a>
+            <a href="${base}auth/registro.html">Registrarse</a>
             <a href="${base}cuenta/pedidos.html">Mis pedidos</a>
           </div>
           <div>

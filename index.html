@@ -15,7 +15,7 @@
         <div class="container">
           <h1>Descubre productos increíbles</h1>
           <p>Los mejores productos con los mejores precios y envío rápido a todo el país.</p>
-          <a href="./catalogo.html" class="btn btn-lg" style="background:var(--color-white);color:var(--color-primary)">Ver catálogo</a>
+          <a href="./pagina/catalogo.html" class="btn btn-lg" style="background:var(--color-white);color:var(--color-primary)">Ver catálogo</a>
         </div>
       </section>
 
@@ -94,7 +94,7 @@
         featuredEl.innerHTML = featured.map(p => {
           const discount = calculateDiscount(p.price, p.offer_price)
           return `
-            <a href="${base}producto.html?id=${p.id}" class="product-card">
+            <a href="${base}pagina/producto.html?id=${p.id}" class="product-card">
               <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22 fill=%22%23e2e8f0%22><rect width=%22300%22 height=%22300%22/></svg>'">
               <div class="product-card-body">
                 <div class="product-card-category">${safeText(p.category?.name || '')}</div>
@@ -115,7 +115,7 @@
         offerEl.innerHTML = offers.map(p => {
           const discount = calculateDiscount(p.price, p.offer_price)
           return `
-            <a href="${base}producto.html?id=${p.id}" class="product-card">
+            <a href="${base}pagina/producto.html?id=${p.id}" class="product-card">
               <img src="${p.main_image_url || ''}" alt="${safeText(p.name)}" class="product-card-image" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22 fill=%22%23e2e8f0%22><rect width=%22300%22 height=%22300%22/></svg>'">
               <div class="product-card-body">
                 <div class="product-card-category">${safeText(p.category?.name || '')}</div>
