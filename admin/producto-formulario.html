@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario producto - Admin NovaStore</title>
+  <script type="module" crossorigin src="/virtual-store/assets/admin-producto-formulario-aJ03f9xZ.js"></script>
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.service-BfASCOUI.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/admin.guard-BTP4FHZC.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/storage.service-9nIGUFpn.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/notifications-DBxoMB4P.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/dom-Dz1M3mpB.js">
+  <link rel="stylesheet" crossorigin href="/virtual-store/assets/auth-DVs-K_gi.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside id="admin-sidebar"></aside>
+    <main class="admin-content">
+      <div style="margin-bottom:2rem">
+        <a href="productos.html" style="color:var(--color-primary);font-size:0.875rem">← Volver a productos</a>
+      </div>
+      <h1 style="font-size:var(--font-size-2xl);font-weight:700;margin-bottom:var(--spacing-xl)" id="form-title">Nuevo producto</h1>
+      <div class="card" style="padding:var(--spacing-xl);max-width:800px">
+        <form id="product-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="name">Nombre</label>
+            <input type="text" id="name" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="slug">Slug</label>
+            <input type="text" id="slug" class="form-input" placeholder="nombre-del-producto" required>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div class="form-group">
+              <label class="form-label" for="category">Categoría</label>
+              <select id="category" class="form-select" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="sku">SKU</label>
+              <input type="text" id="sku" class="form-input" required>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div class="form-group">
+              <label class="form-label" for="price">Precio</label>
+              <input type="number" id="price" class="form-input" min="0.01" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="offer-price">Precio de oferta</label>
+              <input type="number" id="offer-price" class="form-input" min="0" step="0.01">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div class="form-group">
+              <label class="form-label" for="stock">Stock</label>
+              <input type="number" id="stock" class="form-input" min="0" step="1" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="min-stock">Stock mínimo</label>
+              <input type="number" id="min-stock" class="form-input" min="0" step="1" value="5">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="description">Descripción</label>
+            <textarea id="description" class="form-textarea" rows="4"></textarea>
+          </div>
+          <div class="form-group" style="display:flex;gap:1rem;align-items:center">
+            <label><input type="checkbox" id="featured"> Producto destacado</label>
+            <label><input type="checkbox" id="active" checked> Activo</label>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Imagen principal</label>
+            <input type="file" id="main-image" accept="image/jpeg,image/png,image/webp">
+            <div id="image-preview" style="margin-top:0.5rem"></div>
+          </div>
+          <div class="form-group" id="extra-images-section" style="display:none">
+            <label class="form-label">Imágenes adicionales</label>
+            <input type="file" id="extra-images" accept="image/jpeg,image/png,image/webp" multiple>
+            <div id="extra-preview" style="display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap"></div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" id="save-btn">Guardar producto</button>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

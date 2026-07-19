@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel administrativo - NovaStore</title>
+  <style>.admin-content { max-width: 1200px; }</style>
+  <script type="module" crossorigin src="/virtual-store/assets/admin-index-fzIHckHp.js"></script>
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.service-BfASCOUI.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/admin.guard-BTP4FHZC.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/currency-BUz-WTj3.js">
+  <link rel="stylesheet" crossorigin href="/virtual-store/assets/auth-DVs-K_gi.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside id="admin-sidebar"></aside>
+    <main class="admin-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+        <h1 style="font-size:var(--font-size-2xl);font-weight:700">Dashboard</h1>
+        <a href="../index.html" style="font-size:0.875rem;color:var(--color-primary)">← Ver tienda</a>
+      </div>
+      <div class="stats-grid" id="stats-cards">
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+        <div class="card stat-card"><div class="skeleton" style="height:80px"></div></div>
+      </div>
+      <div class="card" style="padding:var(--spacing-lg);margin-top:var(--spacing-xl)">
+        <h3 style="margin-bottom:1rem">Pedidos recientes</h3>
+        <div id="recent-orders"><div class="skeleton" style="height:200px"></div></div>
+      </div>
+      <div class="card" style="padding:var(--spacing-lg);margin-top:var(--spacing-lg)">
+        <h3 style="margin-bottom:1rem">Ventas del mes</h3>
+        <canvas id="sales-chart" height="250"></canvas>
+      </div>
+    </main>
+  </div>
+
+</body>
+</html>

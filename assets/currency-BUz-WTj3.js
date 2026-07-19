@@ -1,0 +1,1 @@
+function t(n){return n==null||isNaN(n)?"$0.00":new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN",minimumFractionDigits:2}).format(n)}function u(n,r){return!n||!r||r>=n?0:Math.round((n-r)/n*100)}export{u as c,t as f};

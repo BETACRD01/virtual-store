@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi perfil - NovaStore</title>
+  <script type="module" crossorigin src="/virtual-store/assets/perfil-fB9R9xmC.js"></script>
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.service-BfASCOUI.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/footer-BXBpEo4g.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/account-sidebar-DHbQ-DrP.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/storage.service-9nIGUFpn.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.guard-B_y850aO.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/notifications-DBxoMB4P.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/dom-Dz1M3mpB.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/validators-CnhacSCm.js">
+  <link rel="stylesheet" crossorigin href="/virtual-store/assets/auth-DVs-K_gi.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <header id="main-header"></header>
+    <main>
+      <div class="container">
+        <div class="account-layout">
+          <aside id="account-sidebar"></aside>
+          <div>
+            <h1 style="font-size:var(--font-size-2xl);font-weight:700;margin-bottom:var(--spacing-xl)">Mi perfil</h1>
+            <div class="card" style="padding:var(--spacing-xl)">
+              <form id="profile-form" novalidate>
+                <div class="form-group">
+                  <label class="form-label" for="full-name">Nombre completo</label>
+                  <input type="text" id="full-name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="email">Correo electrónico</label>
+                  <input type="email" id="email" class="form-input" disabled style="background:var(--color-gray-100)">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="phone">Teléfono</label>
+                  <input type="tel" id="phone" class="form-input" placeholder="+52 55 1234 5678">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Avatar</label>
+                  <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp">
+                  <div id="avatar-preview" style="margin-top:0.5rem"></div>
+                </div>
+                <hr style="margin:1.5rem 0;border-color:var(--color-gray-200)">
+                <h3 style="margin-bottom:1rem">Cambiar contraseña</h3>
+                <div class="form-group">
+                  <label class="form-label" for="new-password">Nueva contraseña</label>
+                  <input type="password" id="new-password" class="form-input" placeholder="Dejar vacío para no cambiar">
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-btn">Guardar cambios</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer id="main-footer"></footer>
+  </div>
+</body>
+</html>
