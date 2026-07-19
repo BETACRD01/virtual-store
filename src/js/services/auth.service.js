@@ -34,6 +34,12 @@ export const authService = {
     return data.user
   },
 
+  async signInWithGoogle() {
+    const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' })
+    if (error) throw new Error(getUserErrorMessage(error))
+    return data
+  },
+
   onAuthStateChange(callback) {
     return supabase.auth.onAuthStateChange((event, session) => callback(event, session))
   },
