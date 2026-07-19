@@ -68,7 +68,7 @@ export async function loadHeader() {
             <input type="text" id="global-search" placeholder="Buscar productos..." aria-label="Buscar productos">
           </div>
           <div class="header-actions">
-            <a href="${base}pagina/carrito.html" title="Carrito" aria-label="Carrito de compras">
+            <a href="${base}pagina/carrito.html" class="header-action-btn" title="Carrito" aria-label="Carrito de compras">
               🛒
               ${cartCount > 0 ? `<span class="cart-count" id="cart-count">${cartCount > 99 ? '99+' : cartCount}</span>` : ''}
             </a>
