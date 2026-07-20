@@ -7,122 +7,164 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>NovaStore - Tu tienda online</title>
   <meta name="description" content="Descubre los mejores productos en NovaStore. Envíos a todo el país.">
-  <script type="module" crossorigin src="/virtual-store/assets/main-CtAQ-UXY.js"></script>
-  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.service-BFJLC_vC.js">
-  <link rel="modulepreload" crossorigin href="/virtual-store/assets/footer-DFv10KXw.js">
+  <script type="module" crossorigin src="/virtual-store/assets/main-DHIEKxLg.js"></script>
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/auth.service-COov5E7B.js">
+  <link rel="modulepreload" crossorigin href="/virtual-store/assets/footer-BeBew-19.js">
   <link rel="modulepreload" crossorigin href="/virtual-store/assets/currency-BUz-WTj3.js">
   <link rel="modulepreload" crossorigin href="/virtual-store/assets/dom-Dz1M3mpB.js">
-  <link rel="stylesheet" crossorigin href="/virtual-store/assets/auth-CaPtOP8q.css">
+  <link rel="stylesheet" crossorigin href="/virtual-store/assets/auth-BpzVQfvl.css">
 </head>
 <body>
   <div class="page-wrapper">
     <header id="main-header"></header>
     <main>
-      <section class="hero">
-        <div class="container">
-          <div class="hero-grid">
-            <div class="hero-content">
-              <div class="hero-badge">✨ Nueva colección 2026</div>
-              <h1>Descubre productos <span>increíbles</span></h1>
-              <p>Los mejores productos con los mejores precios y envío rápido a todo el país.</p>
-              <div class="hero-actions">
-                <a href="./pagina/catalogo.html" class="btn btn-accent btn-lg">Ver catálogo →</a>
-                <a href="./pagina/catalogo.html?ofertas=true" class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,0.15);color:var(--color-white)">Ofertas</a>
+      <div class="container">
+        <div class="ae-carousel" id="hero-carousel">
+          <div class="ae-carousel-track" id="carousel-track">
+            <div class="ae-carousel-slide">
+              <div style="width:100%;height:100%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;padding:0 8%">
+                <div style="max-width:380px">
+                  <h2 style="font-size:1.6rem;font-weight:800;color:#fff;margin-bottom:0.4rem;line-height:1.2">Nuevos lanzamientos</h2>
+                  <p style="font-size:0.85rem;color:rgba(255,255,255,0.7);margin-bottom:0.8rem">Descubre los productos más innovadores de la temporada con precios exclusivos.</p>
+                  <a href="./pagina/catalogo.html" class="btn" style="background:#fff;color:#764ba2;font-weight:700;padding:0.5rem 1.5rem;border-radius:999px;font-size:0.85rem;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;text-decoration:none">Ver colección →</a>
+                </div>
               </div>
             </div>
-            <div class="hero-visual">
-              <div class="hero-visual-inner">
-                <div class="hero-visual-card">
-                  <div class="hero-visual-row">
-                    <div class="hero-visual-icon">🔥</div>
-                    <div class="hero-visual-text">
-                      <div class="hero-visual-title">Hasta 50% OFF</div>
-                      <div class="hero-visual-price">En productos <span>seleccionados</span></div>
-                    </div>
-                  </div>
-                  <div style="height:1px;background:rgba(255,255,255,0.06);margin:0.75rem 0"></div>
-                  <div class="hero-visual-row">
-                    <div class="hero-visual-icon">🚚</div>
-                    <div class="hero-visual-text">
-                      <div class="hero-visual-title">Envío gratis</div>
-                      <div class="hero-visual-price">En compras <span>mayores a $999</span></div>
-                    </div>
-                  </div>
-                  <div style="height:1px;background:rgba(255,255,255,0.06);margin:0.75rem 0"></div>
-                  <div class="hero-visual-row">
-                    <div class="hero-visual-icon">🛡️</div>
-                    <div class="hero-visual-text">
-                      <div class="hero-visual-title">Compra segura</div>
-                      <div class="hero-visual-price">Datos <span>protegidos</span></div>
-                    </div>
-                  </div>
+            <div class="ae-carousel-slide">
+              <div style="width:100%;height:100%;background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);display:flex;align-items:center;padding:0 8%">
+                <div style="max-width:380px">
+                  <h2 style="font-size:1.6rem;font-weight:800;color:#fff;margin-bottom:0.4rem;line-height:1.2">Hasta 70% OFF</h2>
+                  <p style="font-size:0.85rem;color:rgba(255,255,255,0.7);margin-bottom:0.8rem">Ofertas flash por tiempo limitado. Aprovecha los descuentos más grandes del mes.</p>
+                  <a href="./pagina/catalogo.html?ofertas=true" class="btn" style="background:#fff;color:#f5576c;font-weight:700;padding:0.5rem 1.5rem;border-radius:999px;font-size:0.85rem;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;text-decoration:none">Ver ofertas →</a>
+                </div>
+              </div>
+            </div>
+            <div class="ae-carousel-slide">
+              <div style="width:100%;height:100%;background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);display:flex;align-items:center;padding:0 8%">
+                <div style="max-width:380px">
+                  <h2 style="font-size:1.6rem;font-weight:800;color:#fff;margin-bottom:0.4rem;line-height:1.2">Envío gratis</h2>
+                  <p style="font-size:0.85rem;color:rgba(255,255,255,0.7);margin-bottom:0.8rem">En compras mayores a $999. Aprovecha esta oferta especial por tiempo limitado.</p>
+                  <a href="./pagina/catalogo.html" class="btn" style="background:#fff;color:#0099cc;font-weight:700;padding:0.5rem 1.5rem;border-radius:999px;font-size:0.85rem;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;text-decoration:none">Comprar ahora →</a>
                 </div>
               </div>
             </div>
           </div>
+          <button class="ae-carousel-arrow prev" id="carousel-prev">‹</button>
+          <button class="ae-carousel-arrow next" id="carousel-next">›</button>
+          <div class="ae-carousel-dots" id="carousel-dots">
+            <button class="ae-carousel-dot active" data-slide="0"></button>
+            <button class="ae-carousel-dot" data-slide="1"></button>
+            <button class="ae-carousel-dot" data-slide="2"></button>
+          </div>
         </div>
-      </section>
+      </div>
 
-      <section class="section" id="featured-section">
+      <section class="ae-section" id="flash-section">
         <div class="container">
-          <div class="section-header">
-            <div>
-              <h2 class="section-title">Productos destacados</h2>
-              <p class="section-subtitle">Lo más popular de la semana</p>
+          <div class="ae-section-header">
+            <div class="ae-section-title">
+              <span class="flash-icon">⚡</span>
+              Ofertas flash
+              <div class="ae-countdown" id="countdown">
+                <span class="ae-countdown-num" id="cd-hours">00</span>
+                <span class="ae-countdown-sep">:</span>
+                <span class="ae-countdown-num" id="cd-minutes">00</span>
+                <span class="ae-countdown-sep">:</span>
+                <span class="ae-countdown-num" id="cd-seconds">00</span>
+              </div>
             </div>
-            <a href="./pagina/catalogo.html" class="section-link">Ver todos →</a>
+            <a href="./pagina/catalogo.html?ofertas=true" class="ae-section-link">Ver todas →</a>
           </div>
-          <div class="grid grid-4" id="featured-products">
-            <div class="skeleton" style="height:320px"></div>
-            <div class="skeleton" style="height:320px"></div>
-            <div class="skeleton" style="height:320px"></div>
-            <div class="skeleton" style="height:320px"></div>
+          <div class="ae-product-grid" id="flash-products">
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
           </div>
         </div>
       </section>
 
-      <section class="section" style="background:var(--color-gray-100)" id="offers-section">
+      <section class="ae-section">
         <div class="container">
-          <div class="section-header">
-            <div>
-              <h2 class="section-title">Ofertas especiales</h2>
-              <p class="section-subtitle">No te pierdas estos precios</p>
-            </div>
-            <a href="./pagina/catalogo.html?ofertas=true" class="section-link">Ver ofertas →</a>
+          <div class="ae-section-header">
+            <div class="ae-section-title">Compra por categoría</div>
           </div>
-          <div class="grid grid-4" id="offer-products">
-            <div class="skeleton" style="height:320px"></div>
-            <div class="skeleton" style="height:320px"></div>
-            <div class="skeleton" style="height:320px"></div>
-            <div class="skeleton" style="height:320px"></div>
+          <div class="ae-cat-grid" id="category-grid">
+            <div class="skeleton" style="height:110px;border-radius:12px"></div>
+            <div class="skeleton" style="height:110px;border-radius:12px"></div>
+            <div class="skeleton" style="height:110px;border-radius:12px"></div>
+            <div class="skeleton" style="height:110px;border-radius:12px"></div>
+            <div class="skeleton" style="height:110px;border-radius:12px"></div>
+            <div class="skeleton" style="height:110px;border-radius:12px"></div>
           </div>
         </div>
       </section>
 
-      <section class="section">
-        <div class="container" style="text-align:center">
-          <h2 class="section-title" style="margin-bottom:var(--spacing-xs)">¿Por qué elegirnos?</h2>
-          <p class="section-subtitle" style="margin-bottom:var(--spacing-2xl);max-width:500px;margin-left:auto;margin-right:auto">La mejor experiencia de compra online</p>
+      <section class="ae-section" id="featured-section">
+        <div class="container">
+          <div class="ae-section-header">
+            <div class="ae-section-title">🔥 Productos destacados</div>
+            <a href="./pagina/catalogo.html" class="ae-section-link">Ver todos →</a>
+          </div>
+          <div class="ae-product-grid" id="featured-products">
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="container">
+        <div class="ae-deal-banner">
+          <div class="ae-deal-banner-content">
+            <h3>🛡️ Compra con confianza</h3>
+            <p>Protección al comprador garantizada. Devoluciones fáciles en 30 días.</p>
+            <a href="./pagina/catalogo.html" class="btn btn-accent btn-sm">Empezar a comprar</a>
+          </div>
+        </div>
+      </div>
+
+      <section class="ae-section">
+        <div class="container">
+          <div class="ae-section-header">
+            <div class="ae-section-title">🏷️ Ofertas especiales</div>
+            <a href="./pagina/catalogo.html?ofertas=true" class="ae-section-link">Ver ofertas →</a>
+          </div>
+          <div class="ae-product-grid" id="offer-products">
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+            <div class="skeleton" style="height:280px;border-radius:10px"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ae-section" style="background:var(--color-gray-50);padding:2rem 0">
+        <div class="container">
           <div class="benefits">
             <div class="benefit-card card">
               <div class="benefit-icon">🚚</div>
               <div class="benefit-title">Envío rápido</div>
-              <div class="benefit-desc">Entregas en 24-48 horas</div>
+              <div class="benefit-desc">Entregas en 24-48 horas a todo el país</div>
             </div>
             <div class="benefit-card card">
               <div class="benefit-icon">🔒</div>
               <div class="benefit-title">Pago seguro</div>
-              <div class="benefit-desc">Datos protegidos</div>
+              <div class="benefit-desc">Tus datos siempre protegidos</div>
             </div>
             <div class="benefit-card card">
               <div class="benefit-icon">🔄</div>
               <div class="benefit-title">Devoluciones</div>
-              <div class="benefit-desc">30 días de garantía</div>
+              <div class="benefit-desc">30 días de garantía sin complicaciones</div>
             </div>
             <div class="benefit-card card">
               <div class="benefit-icon">💬</div>
               <div class="benefit-title">Soporte 24/7</div>
-              <div class="benefit-desc">Ayuda profesional</div>
+              <div class="benefit-desc">Ayuda profesional cuando la necesites</div>
             </div>
           </div>
         </div>
