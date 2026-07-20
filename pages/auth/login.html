@@ -7,41 +7,193 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>Iniciar sesión - NovaStore</title>
   <link rel="stylesheet" href="../../src/css/global.css">
+  <style>
+    .form-input-icon svg { display: block; }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-lg);
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-600);
+      cursor: pointer;
+      user-select: none;
+    }
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--color-primary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      margin: 0;
+    }
+    .forgot-link {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .forgot-link:hover { color: var(--color-primary-dark); text-decoration: underline; }
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-sm);
+      width: 100%;
+      padding: 0.8125rem 1.5rem;
+      border: 1.5px solid var(--color-gray-200);
+      border-radius: var(--radius-xl);
+      background: var(--color-white);
+      color: var(--color-gray-700);
+      font-weight: 600;
+      font-size: var(--font-size-sm);
+      cursor: pointer;
+      transition: all var(--transition);
+      min-height: 48px;
+      font-family: inherit;
+      margin-top: var(--spacing-lg);
+    }
+    .google-btn:hover {
+      border-color: var(--color-primary);
+      background: var(--color-primary-bg);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .google-btn:active { transform: translateY(0); }
+
+    .auth-separator {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin: var(--spacing-lg) 0;
+      color: var(--color-gray-400);
+      font-size: var(--font-size-sm);
+    }
+    .auth-separator::before,
+    .auth-separator::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-gray-200);
+    }
+
+    .register-prompt {
+      text-align: center;
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+      margin-top: var(--spacing-lg);
+    }
+    .register-prompt a {
+      font-weight: 600;
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+    .register-prompt a:hover { text-decoration: underline; }
+
+    .auth-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-primary));
+      background-size: 200% 100%;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 0%; }
+      50% { background-position: 100% 0%; }
+    }
+
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-xs);
+    }
+    .auth-logo svg { flex-shrink: 0; }
+
+    @media (max-width: 480px) {
+      .auth-card { padding: var(--spacing-xl) var(--spacing-lg); border-radius: var(--radius-xl); }
+      .remember-row { flex-direction: column; align-items: flex-start; gap: var(--spacing-sm); }
+    }
+  </style>
 </head>
 <body>
   <div class="auth-page">
     <div class="auth-card card">
-      <h1 class="auth-title">NovaStore</h1>
+      <div class="auth-logo">
+        <svg width="32" height="32" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="url(#logo-grad)"/><path d="M12 28V16l8-6 8 6v12h-6v-8h-4v8H12z" fill="#fff"/><defs><linearGradient id="logo-grad" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#818cf8"/></linearGradient></defs></svg>
+        <span style="font-size:var(--font-size-xl);font-weight:800;color:var(--color-gray-900);letter-spacing:-0.5px">NovaStore</span>
+      </div>
       <p class="auth-subtitle">Inicia sesión para continuar</p>
+
       <form id="login-form" novalidate>
         <div class="form-group">
           <label class="form-label" for="email">Correo electrónico</label>
-          <input type="email" id="email" class="form-input" placeholder="tu@correo.com" required autocomplete="email">
+          <div style="position:relative">
+            <span class="form-input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            <input type="email" id="email" class="form-input with-icon" placeholder="tu@correo.com" required autocomplete="email">
+          </div>
           <div class="form-error" id="email-error"></div>
         </div>
+
         <div class="form-group">
           <label class="form-label" for="password">Contraseña</label>
           <div class="password-wrapper">
-            <input type="password" id="password" class="form-input" placeholder="Tu contraseña" required autocomplete="current-password">
-            <button type="button" class="password-toggle" id="toggle-password" aria-label="Mostrar contraseña">👁</button>
+            <span class="form-input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <input type="password" id="password" class="form-input with-icon" placeholder="Tu contraseña" required autocomplete="current-password" style="padding-right:2.75rem">
+            <button type="button" class="password-toggle" id="toggle-password" aria-label="Mostrar contraseña">
+              <svg width="18" height="18" id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
           </div>
           <div class="form-error" id="password-error"></div>
         </div>
-        <div class="form-group" style="text-align:right">
-          <a href="./recuperar-password.html" class="auth-link" style="font-size:0.875rem">¿Olvidaste tu contraseña?</a>
+
+        <div class="remember-row">
+          <label class="checkbox-label">
+            <input type="checkbox" id="remember-me">
+            Recordarme
+          </label>
+          <a href="./recuperar-password.html" class="forgot-link">¿Olvidaste tu contraseña?</a>
         </div>
-        <button type="submit" class="btn btn-primary btn-block btn-lg" id="submit-btn">Iniciar sesión</button>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="submit-btn">
+          Iniciar sesión
+        </button>
       </form>
-      <button class="auth-social-btn" id="google-btn">
+
+      <div class="auth-separator">o continúa con</div>
+
+      <button class="google-btn" id="google-btn">
         <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.87 7.35 2.56 10.56l7.97-5.97z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.97C6.51 42.62 14.62 48 24 48z"/></svg>
-        Continuar con Google
+        Google
       </button>
-      <div class="auth-divider">o</div>
-      <p style="text-align:center;font-size:0.875rem;color:var(--color-gray-500)">
-        ¿No tienes cuenta? <a href="./registro.html" class="auth-link">Regístrate</a>
-      </p>
+
+      <div class="register-prompt">
+        ¿No tienes cuenta? <a href="./registro.html">Regístrate</a>
+      </div>
     </div>
   </div>
+
   <script type="module">
     import { authService } from '../../src/js/services/auth.service.js'
     import { validateEmail, validateRequired } from '../../src/js/utils/validators.js'
@@ -58,33 +210,55 @@
     const passwordError = document.getElementById('password-error')
     const submitBtn = document.getElementById('submit-btn')
 
+    const eyeIcon = document.getElementById('eye-icon')
     document.getElementById('toggle-password').addEventListener('click', () => {
-      const t = passwordInput.type === 'password' ? 'text' : 'password'
-      passwordInput.type = t
+      const isPassword = passwordInput.type === 'password'
+      passwordInput.type = isPassword ? 'text' : 'password'
+      eyeIcon.innerHTML = isPassword
+        ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+        : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
     })
 
     function validate() {
       let valid = true
       const e = validateEmail(emailInput.value)
       emailError.textContent = e || ''
+      emailInput.classList.toggle('error', !!e)
       if (e) valid = false
+
       const p = validateRequired(passwordInput.value, 'La contraseña')
       passwordError.textContent = p || ''
+      passwordInput.classList.toggle('error', !!p)
       if (p) valid = false
       return valid
     }
 
-    emailInput.addEventListener('input', () => { if (emailError.textContent) validate() })
-    passwordInput.addEventListener('input', () => { if (passwordError.textContent) validate() })
+    emailInput.addEventListener('input', () => {
+      if (emailError.textContent) { emailError.textContent = ''; emailInput.classList.remove('error') }
+    })
+    passwordInput.addEventListener('input', () => {
+      if (passwordError.textContent) { passwordError.textContent = ''; passwordInput.classList.remove('error') }
+    })
+
+    emailInput.addEventListener('blur', () => {
+      if (emailInput.value.trim()) { const e = validateEmail(emailInput.value); emailError.textContent = e || ''; emailInput.classList.toggle('error', !!e) }
+    })
+    passwordInput.addEventListener('blur', () => {
+      if (passwordInput.value) { const p = validateRequired(passwordInput.value, 'La contraseña'); passwordError.textContent = p || ''; passwordInput.classList.toggle('error', !!p) }
+    })
 
     document.getElementById('google-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('google-btn')
+      btn.disabled = true
+      btn.style.opacity = '0.6'
       try { await authService.signInWithGoogle() }
-      catch (err) { showError(err.message) }
+      catch (err) { showError(err.message); btn.disabled = false; btn.style.opacity = '1' }
     })
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault()
       if (!validate()) return
+      submitBtn.classList.add('btn-loading')
       disableButton(submitBtn)
       try {
         await authService.signIn({ email: emailInput.value.trim(), password: passwordInput.value })
@@ -94,7 +268,29 @@
         window.location.href = redirect
       } catch (err) {
         showError(err.message)
+        submitBtn.classList.remove('btn-loading')
         enableButton(submitBtn)
+        passwordInput.value = ''
+        passwordInput.focus()
+      }
+    })
+
+    if (localStorage.getItem('remembered-email')) {
+      emailInput.value = localStorage.getItem('remembered-email')
+      document.getElementById('remember-me').checked = true
+    }
+
+    document.getElementById('remember-me').addEventListener('change', function() {
+      if (this.checked) {
+        localStorage.setItem('remembered-email', emailInput.value.trim())
+      } else {
+        localStorage.removeItem('remembered-email')
+      }
+    })
+
+    emailInput.addEventListener('change', () => {
+      if (document.getElementById('remember-me').checked && emailInput.value.trim()) {
+        localStorage.setItem('remembered-email', emailInput.value.trim())
       }
     })
   </script>
