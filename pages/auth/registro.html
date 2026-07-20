@@ -162,87 +162,89 @@
     import { validateEmail, validatePassword, validateRequired } from '../../src/js/utils/validators.js'
     import { showError, showSuccess } from '../../src/js/utils/notifications.js'
     import { disableButton, enableButton } from '../../src/js/utils/dom.js'
-    const session = await authService.getSession()
-    if (session) {
-      const role = await authService.getUserRole(session.user.id)
-      window.location.href = role === 'admin' ? `${import.meta.env.BASE_URL}admin/` : `${import.meta.env.BASE_URL}cuenta/perfil.html`
-      document.body.innerHTML = ''
-      return
-    }
-    document.getElementById('auth-page').style.display = ''
+    ;(async () => {
+      const s = await authService.getSession()
+      if (s) {
+        const r = await authService.getUserRole(s.user.id)
+        window.location.href = r === 'admin' ? `${import.meta.env.BASE_URL}admin/` : `${import.meta.env.BASE_URL}cuenta/perfil.html`
+        document.body.innerHTML = ''
+        return
+      }
+      document.getElementById('auth-page').style.display = ''
 
-    const form = document.getElementById('register-form')
-    const nameInput = document.getElementById('full-name')
-    const emailInput = document.getElementById('email')
-    const passwordInput = document.getElementById('password')
-    const confirmInput = document.getElementById('confirm-password')
-    const nameError = document.getElementById('name-error')
-    const emailError = document.getElementById('email-error')
-    const passwordError = document.getElementById('password-error')
-    const confirmError = document.getElementById('confirm-error')
-    const submitBtn = document.getElementById('submit-btn')
+      const form = document.getElementById('register-form')
+      const nameInput = document.getElementById('full-name')
+      const emailInput = document.getElementById('email')
+      const passwordInput = document.getElementById('password')
+      const confirmInput = document.getElementById('confirm-password')
+      const nameError = document.getElementById('name-error')
+      const emailError = document.getElementById('email-error')
+      const passwordError = document.getElementById('password-error')
+      const confirmError = document.getElementById('confirm-error')
+      const submitBtn = document.getElementById('submit-btn')
 
-    function toggleEye(btnId, iconId, input) {
-      const btn = document.getElementById(btnId)
-      const icon = document.getElementById(iconId)
-      btn.addEventListener('click', () => {
-        const isPassword = input.type === 'password'
-        input.type = isPassword ? 'text' : 'password'
-        icon.innerHTML = isPassword
-          ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
-          : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
+      function toggleEye(btnId, iconId, input) {
+        const btn = document.getElementById(btnId)
+        const icon = document.getElementById(iconId)
+        btn.addEventListener('click', () => {
+          const isPassword = input.type === 'password'
+          input.type = isPassword ? 'text' : 'password'
+          icon.innerHTML = isPassword
+            ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+            : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
+        })
+      }
+      toggleEye('toggle-password', 'eye-icon', passwordInput)
+      toggleEye('toggle-confirm', 'eye-icon-2', confirmInput)
+
+      function setError(input, errorEl, msg) {
+        errorEl.textContent = msg || ''
+        input.classList.toggle('error', !!msg)
+        return !msg
+      }
+
+      function validate() {
+        let valid = true
+        valid = setError(nameInput, nameError, validateRequired(nameInput.value, 'El nombre')) && valid
+        valid = setError(emailInput, emailError, validateEmail(emailInput.value)) && valid
+        valid = setError(passwordInput, passwordError, validatePassword(passwordInput.value)) && valid
+        if (passwordInput.value !== confirmInput.value) {
+          valid = setError(confirmInput, confirmError, 'Las contraseñas no coinciden.') && valid
+        } else {
+          setError(confirmInput, confirmError, null)
+        }
+        return valid
+      }
+
+      const clearError = (input, errorEl) => () => { if (errorEl.textContent) { errorEl.textContent = ''; input.classList.remove('error') } }
+      nameInput.addEventListener('input', clearError(nameInput, nameError))
+      emailInput.addEventListener('input', clearError(emailInput, emailError))
+      passwordInput.addEventListener('input', clearError(passwordInput, passwordError))
+      confirmInput.addEventListener('input', clearError(confirmInput, confirmError))
+
+      nameInput.addEventListener('blur', () => { if (nameInput.value.trim()) setError(nameInput, nameError, validateRequired(nameInput.value, 'El nombre')) })
+      emailInput.addEventListener('blur', () => { if (emailInput.value.trim()) setError(emailInput, emailError, validateEmail(emailInput.value)) })
+      passwordInput.addEventListener('blur', () => { if (passwordInput.value) setError(passwordInput, passwordError, validatePassword(passwordInput.value)) })
+      confirmInput.addEventListener('blur', () => {
+        if (confirmInput.value && passwordInput.value !== confirmInput.value) setError(confirmInput, confirmError, 'Las contraseñas no coinciden.')
       })
-    }
-    toggleEye('toggle-password', 'eye-icon', passwordInput)
-    toggleEye('toggle-confirm', 'eye-icon-2', confirmInput)
 
-    function setError(input, errorEl, msg) {
-      errorEl.textContent = msg || ''
-      input.classList.toggle('error', !!msg)
-      return !msg
-    }
-
-    function validate() {
-      let valid = true
-      valid = setError(nameInput, nameError, validateRequired(nameInput.value, 'El nombre')) && valid
-      valid = setError(emailInput, emailError, validateEmail(emailInput.value)) && valid
-      valid = setError(passwordInput, passwordError, validatePassword(passwordInput.value)) && valid
-      if (passwordInput.value !== confirmInput.value) {
-        valid = setError(confirmInput, confirmError, 'Las contraseñas no coinciden.') && valid
-      } else {
-        setError(confirmInput, confirmError, null)
-      }
-      return valid
-    }
-
-    const clearError = (input, errorEl) => () => { if (errorEl.textContent) { errorEl.textContent = ''; input.classList.remove('error') } }
-    nameInput.addEventListener('input', clearError(nameInput, nameError))
-    emailInput.addEventListener('input', clearError(emailInput, emailError))
-    passwordInput.addEventListener('input', clearError(passwordInput, passwordError))
-    confirmInput.addEventListener('input', clearError(confirmInput, confirmError))
-
-    nameInput.addEventListener('blur', () => { if (nameInput.value.trim()) setError(nameInput, nameError, validateRequired(nameInput.value, 'El nombre')) })
-    emailInput.addEventListener('blur', () => { if (emailInput.value.trim()) setError(emailInput, emailError, validateEmail(emailInput.value)) })
-    passwordInput.addEventListener('blur', () => { if (passwordInput.value) setError(passwordInput, passwordError, validatePassword(passwordInput.value)) })
-    confirmInput.addEventListener('blur', () => {
-      if (confirmInput.value && passwordInput.value !== confirmInput.value) setError(confirmInput, confirmError, 'Las contraseñas no coinciden.')
-    })
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      if (!validate()) return
-      submitBtn.classList.add('btn-loading')
-      disableButton(submitBtn)
-      try {
-        await authService.signUp({ email: emailInput.value.trim(), password: passwordInput.value, fullName: nameInput.value.trim() })
-        showSuccess('Cuenta creada. Revisa tu correo para confirmar.')
-        setTimeout(() => { window.location.href = './login.html' }, 3000)
-      } catch (err) {
-        showError(err.message)
-        submitBtn.classList.remove('btn-loading')
-        enableButton(submitBtn)
-      }
-    })
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        if (!validate()) return
+        submitBtn.classList.add('btn-loading')
+        disableButton(submitBtn)
+        try {
+          await authService.signUp({ email: emailInput.value.trim(), password: passwordInput.value, fullName: nameInput.value.trim() })
+          showSuccess('Cuenta creada. Revisa tu correo para confirmar.')
+          setTimeout(() => { window.location.href = './login.html' }, 3000)
+        } catch (err) {
+          showError(err.message)
+          submitBtn.classList.remove('btn-loading')
+          enableButton(submitBtn)
+        }
+      })
+    })()
   </script>
 </body>
 </html>
