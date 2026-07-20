@@ -1,0 +1,1 @@
+import{a as n}from"./auth.service-BFJLC_vC.js";async function e(){const o=await n.getSession();return o||(window.location.href=`/virtual-store/auth/login.html?redirect=${encodeURIComponent(window.location.pathname+window.location.search)}`,null)}export{e as r};
