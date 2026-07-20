@@ -1,5 +1,5 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/auth.service-DSnWIW-s.js","assets/auth-C0RABOrh.css"])))=>i.map(i=>d[i]);
-import{s as d}from"./auth.service-DSnWIW-s.js";import{r as u,_ as g}from"./admin.guard-DzKfWz6e.js";import{s as l}from"./dom-Dz1M3mpB.js";import{s as p,a as c}from"./notifications-DBxoMB4P.js";const s="/virtual-store/";async function v(){var i;const a=document.getElementById("admin-sidebar");a.innerHTML=`<div class="admin-sidebar">
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/auth.service-BFJLC_vC.js","assets/auth-CaPtOP8q.css"])))=>i.map(i=>d[i]);
+import{s as d}from"./auth.service-BFJLC_vC.js";import{r as u,_ as g}from"./admin.guard-CZJNF_7o.js";import{s as l}from"./dom-Dz1M3mpB.js";import{s as p,a as c}from"./notifications-DBxoMB4P.js";const s="/virtual-store/";async function v(){var i;const a=document.getElementById("admin-sidebar");a.innerHTML=`<div class="admin-sidebar">
         <div class="admin-sidebar-logo">⚙️ NovaStore</div>
         <div class="admin-sidebar-section">Menú</div>
         <a href="${s}admin/">📊 Dashboard</a>
@@ -10,7 +10,7 @@ import{s as d}from"./auth.service-DSnWIW-s.js";import{r as u,_ as g}from"./admin
         <div class="admin-sidebar-section">General</div>
         <a href="${s}index.html">← Ver tienda</a>
         <a href="#" id="logout-btn">🚪 Cerrar sesión</a>
-      </div>`,(i=document.getElementById("logout-btn"))==null||i.addEventListener("click",async e=>{e.preventDefault();const{authService:t}=await g(async()=>{const{authService:n}=await import("./auth.service-DSnWIW-s.js").then(r=>r.b);return{authService:n}},__vite__mapDeps([0,1]));await t.signOut(),window.location.href=`${s}index.html`})}async function o(){const{data:a,error:i}=await d.from("categories").select("*").order("name");if(i){document.getElementById("categories-table").innerHTML="<p>Error</p>";return}const e=document.getElementById("categories-table");if(!(a!=null&&a.length)){e.innerHTML='<div class="empty-state"><p>Sin categorías.</p></div>';return}e.innerHTML=`<div class="table-container"><table>
+      </div>`,(i=document.getElementById("logout-btn"))==null||i.addEventListener("click",async e=>{e.preventDefault();const{authService:t}=await g(async()=>{const{authService:n}=await import("./auth.service-BFJLC_vC.js").then(r=>r.b);return{authService:n}},__vite__mapDeps([0,1]));await t.signOut(),window.location.href=`${s}index.html`})}async function o(){const{data:a,error:i}=await d.from("categories").select("*").order("name");if(i){document.getElementById("categories-table").innerHTML="<p>Error</p>";return}const e=document.getElementById("categories-table");if(!(a!=null&&a.length)){e.innerHTML='<div class="empty-state"><p>Sin categorías.</p></div>';return}e.innerHTML=`<div class="table-container"><table>
         <thead><tr><th>Nombre</th><th>Slug</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody>${a.map(t=>`<tr>
           <td><strong>${l(t.name)}</strong></td>

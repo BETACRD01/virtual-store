@@ -1,5 +1,5 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/auth.service-DSnWIW-s.js","assets/auth-C0RABOrh.css"])))=>i.map(i=>d[i]);
-import{s as o}from"./auth.service-DSnWIW-s.js";import{r as l,_ as c}from"./admin.guard-DzKfWz6e.js";import{s as d}from"./dom-Dz1M3mpB.js";import"./notifications-DBxoMB4P.js";const e="/virtual-store/";async function m(){var s;const a=document.getElementById("admin-sidebar");a.innerHTML=`<div class="admin-sidebar">
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/auth.service-BFJLC_vC.js","assets/auth-CaPtOP8q.css"])))=>i.map(i=>d[i]);
+import{s as o}from"./auth.service-BFJLC_vC.js";import{r as l,_ as c}from"./admin.guard-CZJNF_7o.js";import{s as d}from"./dom-Dz1M3mpB.js";import"./notifications-DBxoMB4P.js";const e="/virtual-store/";async function m(){var s;const a=document.getElementById("admin-sidebar");a.innerHTML=`<div class="admin-sidebar">
         <div class="admin-sidebar-logo">⚙️ NovaStore</div>
         <div class="admin-sidebar-section">Menú</div>
         <a href="${e}admin/">📊 Dashboard</a>
@@ -10,7 +10,7 @@ import{s as o}from"./auth.service-DSnWIW-s.js";import{r as l,_ as c}from"./admin
         <div class="admin-sidebar-section">General</div>
         <a href="${e}index.html">← Ver tienda</a>
         <a href="#" id="logout-btn">🚪 Cerrar sesión</a>
-      </div>`,(s=document.getElementById("logout-btn"))==null||s.addEventListener("click",async i=>{i.preventDefault();const{authService:t}=await c(async()=>{const{authService:n}=await import("./auth.service-DSnWIW-s.js").then(r=>r.b);return{authService:n}},__vite__mapDeps([0,1]));await t.signOut(),window.location.href=`${e}index.html`})}async function h(){await l(),await m();const{data:a,error:s}=await o.from("profiles").select("*, orders:orders(count)").order("created_at",{ascending:!1}),i=document.getElementById("customers-table");if(s){i.innerHTML="<p>Error</p>";return}if(!(a!=null&&a.length)){i.innerHTML='<div class="empty-state"><p>Sin clientes.</p></div>';return}i.innerHTML=`<div class="table-container"><table>
+      </div>`,(s=document.getElementById("logout-btn"))==null||s.addEventListener("click",async i=>{i.preventDefault();const{authService:t}=await c(async()=>{const{authService:n}=await import("./auth.service-BFJLC_vC.js").then(r=>r.b);return{authService:n}},__vite__mapDeps([0,1]));await t.signOut(),window.location.href=`${e}index.html`})}async function h(){await l(),await m();const{data:a,error:s}=await o.from("profiles").select("*, orders:orders(count)").order("created_at",{ascending:!1}),i=document.getElementById("customers-table");if(s){i.innerHTML="<p>Error</p>";return}if(!(a!=null&&a.length)){i.innerHTML='<div class="empty-state"><p>Sin clientes.</p></div>';return}i.innerHTML=`<div class="table-container"><table>
         <thead><tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Registro</th><th>Pedidos</th><th>Rol</th><th>Estado</th></tr></thead>
         <tbody>${a.map(t=>{var n,r;return`<tr>
           <td><strong>${d(t.full_name||"—")}</strong></td>
